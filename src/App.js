@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-gist.css';
 
 import { Container, Row, Column } from './skeleton';
 
-import { Header } from './Header';
-import { Footer } from './Footer';
-
-import { NavList, TagNav, HistoryNav } from './Nav';
 import { Article } from './Article';
+import { Footer } from './Footer';
+import { Header } from './Header';
+import { NavList, TagNav, HistoryNav } from './Nav';
 
 
 class App extends Component {
@@ -48,6 +49,11 @@ class App extends Component {
         is_page
       />
     ];
+  }
+
+  componentDidMount() {
+    // Auto-highlight all <pre><code> blocks
+    hljs.initHighlightingOnLoad();
   }
 }
 
