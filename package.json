@@ -8,6 +8,7 @@
     "react-dom": "^15.6.1",
     "react-fontawesome": "^1.6.1",
     "react-markdown": "^2.5.0",
+    "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.13",
     "react-skeleton-css": "^1.0.2"
   },
