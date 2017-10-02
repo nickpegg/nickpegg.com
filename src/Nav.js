@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 import Icon from 'react-fontawesome';
 
@@ -18,14 +19,29 @@ class ListLink extends Component {
   }
 }
 
+class RouterListLink extends Component {
+  render () {
+    let icon = null;
+    if (this.props.icon) {
+      icon = <Icon name={ this.props.icon } />
+    }
+
+    return (
+      <li> <Link to={ this.props.href }>{ icon } { this.props.name }</Link> </li>
+    );
+  }
+}
+
 class NavList extends Component {
   render() {
+    // TODO: populate these dynamically based on root page names
+    // but keep Home first and RSS at the end
     return (
       <Row>
         <ul>
-          <ListLink name="Home" href="/" />
-          <ListLink name="About" href="/about" />
-          <ListLink name="Projects" href="/projects" />
+          <RouterListLink name="Home" href="/" />
+          <RouterListLink name="About" href="/about" />
+          <RouterListLink name="Projects" href="/projects" />
           <ListLink name="RSS" href="/rss.xml" icon="rss-square" />
         </ul>
       </Row>
@@ -57,12 +73,18 @@ class TagNav extends Component {
 
 class HistoryNav extends Component {
   render() {
+    let left = "";
+    if (!this.props.newest) {
+      left = (
+          <a href="">
+            <Icon name="arrow-left" />
+            <span> newer posts</span>
+          </a>
+      )
+    }
     return (
       <Row>
-        <a href="">
-          <Icon name="arrow-left" />
-          <span> newer posts</span>
-        </a>
+        { left }
         <a className="u-pull-right" href="">
           <span>older posts </span>
           <Icon name="arrow-right" />
@@ -72,4 +94,8 @@ class HistoryNav extends Component {
   }
 }
 
-export { ListLink, NavList, TagNav, HistoryNav };
+const HistoryNavStart = ({match}) => (
+  <HistoryNav newest />
+)
+
+export { ListLink, NavList, TagNav, HistoryNav, HistoryNavStart };

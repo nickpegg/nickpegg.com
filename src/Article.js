@@ -63,4 +63,29 @@ class Article extends Component {
   }
 }
 
-export { Article };
+
+const RoutedArticle = ({match}) => (
+  <Article title={match.params.title} />
+)
+
+
+const Articles = ({match}) => (
+  // TODO: This is the thing that'll fetch the articles from the JSON blob
+  // based on the URL that's hit. This will return one or more Articles
+  <div>
+    <Article
+      title="This is where a blog post would go"
+      date="1970-01-01"
+    />
+    <Article
+      title="This is another blog post!"
+      date="1970-01-01"
+      is_page
+    />
+    <p>
+      This is page number: {match.params.page}
+    </p>
+  </div>
+)
+
+export { Article, Articles, RoutedArticle };
