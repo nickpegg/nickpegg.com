@@ -18,11 +18,16 @@ import { NotFound } from './NotFound';
 
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.title = 'Nick Pegg';
+  }
+
   render() {
     return (
       <Router>
         <div className="App">
-          <Header />
+          <Header title={this.title} />
 
           <Container>
             <Row>
@@ -59,8 +64,11 @@ class App extends Component {
   }
 
   componentDidMount() {
+    document.title = this.title;
+
     // Auto-highlight all <pre><code> blocks
     hljs.initHighlightingOnLoad();
+
   }
 }
 

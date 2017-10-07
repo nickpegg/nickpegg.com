@@ -7,7 +7,7 @@ class Header extends Component {
       <div className="page-header">
         <div className="container">
           <Link to="/">
-            <h1>nickpegg.com</h1>
+            <h1>{ this.props.title }</h1>
           </Link>
         </div>
       </div>
