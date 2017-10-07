@@ -83,18 +83,18 @@ class Article extends Component {
 }
 
 
-class FullArticle extends Component {
+class Post extends Component {
   constructor(props) {
     super(props);
     this.props = props;
     this.params = props.match.params;
 
     this.state = {
-      article: null
+      post: null
     }
   }
 
-  fetchArticle() {
+  fetchPost() {
     fetch('/site.json')
       .then((resp) => resp.json())
       .then((blob) => {
@@ -106,33 +106,33 @@ class FullArticle extends Component {
           }
 
           if (slug === this.params.slug) {
-            this.setState({article: post})
+            this.setState({post: post})
             found = true;
             break
           }
         }
 
         if (!found) {
-          console.log('article not found');
+          console.log('post not found');
           /* TODO: return 404 */
         }
       });
   }
 
   componentDidMount() {
-    this.fetchArticle();
+    this.fetchPost();
   }
 
   componentWillReceiveProps(props) {
     this.params = props.match.params;
-    this.fetchArticle();
+    this.fetchPost();
   }
 
   render() {
-    if (this.state.article) {
+    if (this.state.post) {
       return (
         <Article
-          article={this.state.article}
+          article={this.state.post}
         />
       )
     } else {
@@ -143,7 +143,7 @@ class FullArticle extends Component {
   }
 }
 
-class Articles extends Component {
+class Posts extends Component {
   constructor(props) {
     super(props);
 
@@ -153,12 +153,12 @@ class Articles extends Component {
 
     this.params = props.match.params;
     this.state = {
-      articles: null,
+      posts: null,
     }
   }
 
-  fetchArticles() {
-    // Fetch articles from JSON blob
+  fetchPosts() {
+    // Fetch posts from JSON blob
     fetch('/site.json')
       .then((resp) => resp.json())
       .then((blob) => {
@@ -168,25 +168,25 @@ class Articles extends Component {
         }
         let posts = blob.posts.slice(offset, offset + this.per_page);
 
-        this.setState({articles: posts});
+        this.setState({posts: posts});
       });
   }
 
   componentDidMount() {
-    this.fetchArticles();
+    this.fetchPosts();
   }
 
   componentWillReceiveProps(props) {
     this.params = props.match.params;
-    this.fetchArticles();
+    this.fetchPosts();
   }
 
   render() {
-    if (this.state.articles != null) {
-      let articles = this.state.articles.map(article =>
+    if (this.state.posts != null) {
+      let articles = this.state.posts.map(post =>
         <Article
-          key={article.title}
-          article={article}
+          key={post.title}
+          article={post}
           blurb
         />
       );
@@ -205,4 +205,4 @@ class Articles extends Component {
   }
 }
 
-export { Article, FullArticle, Articles };
+export { Article, Post, Posts };
