@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import slugify from 'slugify';
 
 import { ListLink } from './Nav';
+import { NotFound } from './NotFound';
 
 
 class Article extends Component {
@@ -152,11 +153,11 @@ class Articles extends Component {
 
     // Number of Articles per page
     // TODO: Pull this from a configuration somehow
-    this.per_page = 5;
+    this.per_page = 4;
 
     this.params = props.match.params;
     this.state = {
-      articles: [],
+      articles: null,
     }
 
     console.log("page", this.params.page);
@@ -188,17 +189,22 @@ class Articles extends Component {
   }
 
   render() {
-    if (this.state.articles.length > 0) {
+    if (this.state.articles != null) {
+      let articles = this.state.articles.map(article =>
+        <Article
+          key={article.title}
+          article={article}
+          blurb
+        />
+      );
+
+      let jawn = articles;
+      if (articles.length === 0) {
+        jawn = <NotFound />;
+      }
+
       return (
-        <div>
-          {this.state.articles.map(article =>
-            <Article
-              key={article.title}
-              article={article}
-              blurb
-            />
-          )}
-        </div>
+        <div>{ jawn }</div>
       )
     } else {
       return <p>Loading...</p>
