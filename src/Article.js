@@ -59,30 +59,26 @@ class Article extends Component {
     return (
       <div className="post-meta">
         <time>{ time_text } { this.props.article.date }</time>
-        <div className="post-tags"> <Icon name="tags" />
-          <ul>
-            <ListLink name="tag1" href="" />
-            <ListLink name="tag2" href="" />
-          </ul>
-        </div>
+        { this.tags() }
       </div>
     );
   }
 
-  content () {
-    /* TODO: Have this return the actual content of the page/post. This should
-     * probably just be passed in from App.articles()
-     *
-     * This is just dummy filler for now to show off the styling of various
-     * Markdown blocks
-     */
-    return (
-      "Lorem ipsum `dolor sit amet`, sale fugit ea ius, ut eam alii duis, quaeque salutandi cu mea. His quot doming cu, usu labore antiopam appellantur at, in vidit democritum has. Prompta sententiae duo ut. Nam ne iisque repudiare repudiandae, an mel duis ullum posidonium.\n\n"
-      + "# h1 header\n\n"
-      + "```\n#!/bin/bash\necho \"This is a code block!\"\n```\n\n"
-      + "## h2 header\n\n"
-      + "> # Woah\n> Oh and look at this\n>\n> It's a block quote\n\n"
-    );
+  tags() {
+    let tags = this.props.article.tags;
+    if (tags.length === 0) {
+      return;
+    } else {
+      return (
+        <div className="post-tags"> <Icon name="tags" />
+          <ul>
+            {tags.map(tag => (
+              <ListLink name={tag} key={tag} href="" />
+            ))}
+          </ul>
+        </div>
+      )
+    }
   }
 }
 
@@ -112,6 +108,7 @@ class FullArticle extends Component {
           if (slug === this.params.slug) {
             this.setState({article: post})
             found = true;
+            break
           }
         }
 
