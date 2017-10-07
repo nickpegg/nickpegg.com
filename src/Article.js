@@ -1,28 +1,50 @@
 import React, { Component } from 'react';
 import Icon from 'react-fontawesome';
 import Markdown from 'react-markdown';
+import { Link } from 'react-router-dom';
+import slugify from 'slugify';
 
 import { ListLink } from './Nav';
 
 
 class Article extends Component {
   render() {
-    let postLink = "";
+    let body = "";
+    let readMore = "";
+    if (this.props.blurb) {
+      body = this.props.article.blurb;
+      readMore = (<Link to={ this.postLink() }>read more</Link>);
+    } else {
+      body = this.props.article.body;
+    }
 
     return (
       <article>
         <header>
-          <a className="post-title" href={ postLink }>
-            <h1>{ this.props.title }</h1>
-          </a>
+          <Link className="post-title" to={ this.postLink() }>
+            <h1>{ this.props.article.title }</h1>
+          </Link>
           { this.meta() }
         </header>
         <section>
-          <Markdown source={ this.content() } />
-          <a href={ postLink }>omg read more</a>
+          <Markdown source={ body } />
+          { readMore }
         </section>
       </article>
     );
+  }
+
+  postLink() {
+    let date = new Date(this.props.article.date);
+    let year = date.getUTCFullYear();
+    let month = date.getUTCMonth() + 1;
+
+    let slug = this.props.article.slug;
+    if (!slug) {
+      slug = slugify(this.props.article.title);
+    }
+
+    return `/${year}/${month}/${slug}`;
   }
 
   meta() {
@@ -35,7 +57,7 @@ class Article extends Component {
 
     return (
       <div className="post-meta">
-        <time>{ time_text } { this.props.date }</time>
+        <time>{ time_text } { this.props.article.date }</time>
         <div className="post-tags"> <Icon name="tags" />
           <ul>
             <ListLink name="tag1" href="" />
@@ -63,28 +85,66 @@ class Article extends Component {
   }
 }
 
-// Goofball article for routing testing
-class RoutedArticle extends Component {
+
+class FullArticle extends Component {
   constructor(props) {
     super(props);
     this.props = props;
     this.params = props.match.params;
 
     this.state = {
-      body: '',
-      title: 'default title',
-      date: 'default date',
-      tags: [],
+      article: null
     }
   }
 
+  fetchArticle() {
+    fetch('/site.json')
+      .then((resp) => resp.json())
+      .then((blob) => {
+        let found = false;
+        for (let post of blob.posts) {
+          let slug = post.slug;
+          if (!slug) {
+            slug = slugify(post.title);
+          }
+
+          console.log('title compare:', slug, this.params.slug);
+          if (slug === this.params.slug) {
+            this.setState({article: post})
+            found = true;
+          }
+        }
+
+        if (!found) {
+          console.log('article not found');
+          /* TODO: return 404 */
+        }
+      });
+  }
+
+  componentDidMount() {
+    this.fetchArticle();
+  }
+
+  componentWillReceiveProps(props) {
+    this.params = props.match.params;
+    this.fetchArticle();
+  }
+
   render() {
-    return (
-      <Article title={this.state.title} date={this.state.date} />
-    )
+    if (this.state.article) {
+      return (
+        <Article
+          article={this.state.article}
+        />
+      )
+    } else {
+      return (
+        <p>Loading...</p>
+      )
+    }
   }
 }
-
 
 class Articles extends Component {
   constructor(props) {
@@ -115,9 +175,6 @@ class Articles extends Component {
         let posts = blob.posts.slice(offset, offset + this.per_page);
 
         this.setState({articles: posts});
-      })
-      .catch(function(error) {
-        console.log("Oh no! " + error);
       });
   }
 
@@ -131,18 +188,22 @@ class Articles extends Component {
   }
 
   render() {
-    return (
-      <div>
-        {this.state.articles.map(article =>
-          <Article
-            key={article.title}
-            title={article.title}
-            date="1970-01-01"
-          />
-        )}
-      </div>
-    )
+    if (this.state.articles.length > 0) {
+      return (
+        <div>
+          {this.state.articles.map(article =>
+            <Article
+              key={article.title}
+              article={article}
+              blurb
+            />
+          )}
+        </div>
+      )
+    } else {
+      return <p>Loading...</p>
+    }
   }
 }
 
-export { Article, Articles, RoutedArticle };
+export { Article, FullArticle, Articles };

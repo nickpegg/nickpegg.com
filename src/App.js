@@ -11,7 +11,7 @@ import 'highlight.js/styles/github-gist.css';
 
 import { Container, Row, Column } from './skeleton';
 
-import { Articles, RoutedArticle } from './Article';
+import { Articles, FullArticle } from './Article';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { NavList, TagNav, HistoryNav } from './Nav';
@@ -38,10 +38,10 @@ class App extends Component {
 
                   { /* Article routes */ }
                   <Route path="/page/:page" component={Articles} />
-                  <Route path="/:year/:month/:title" component={RoutedArticle} />
+                  <Route path="/:year/:month/:slug" component={FullArticle} />
 
                   { /* 404 fallback */ }
-                  <Route component={FourOhFour} />
+                  <Route component={NotFound} />
                 </Switch>
               </Column>
             </Row>
@@ -82,7 +82,7 @@ class About extends Component {
   }
 }
 
-class FourOhFour extends Component {
+class NotFound extends Component {
   render () {
     return (
       <article>
