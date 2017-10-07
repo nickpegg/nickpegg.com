@@ -77,7 +77,6 @@ class HistoryNav extends Component {
     if (this.props.match.params.page) {
       page = parseInt(this.props.match.params.page, 10);
     }
-    console.log('nav page', page);
 
     let left = "";
     if (page !== 0) {

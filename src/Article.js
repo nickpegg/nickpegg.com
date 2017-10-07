@@ -109,7 +109,6 @@ class FullArticle extends Component {
             slug = slugify(post.title);
           }
 
-          console.log('title compare:', slug, this.params.slug);
           if (slug === this.params.slug) {
             this.setState({article: post})
             found = true;
@@ -159,8 +158,6 @@ class Articles extends Component {
     this.state = {
       articles: null,
     }
-
-    console.log("page", this.params.page);
   }
 
   fetchArticles() {
@@ -172,7 +169,6 @@ class Articles extends Component {
         if (this.params.page) {
           offset = this.params.page * this.per_page;
         }
-        console.log("offset", offset);
         let posts = blob.posts.slice(offset, offset + this.per_page);
 
         this.setState({articles: posts});
