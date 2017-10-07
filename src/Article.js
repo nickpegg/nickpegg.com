@@ -137,7 +137,7 @@ class Post extends Component {
       )
     } else {
       return (
-        <p>Loading...</p>
+        <p></p>
       )
     }
   }
@@ -200,7 +200,7 @@ class Posts extends Component {
         <div>{ jawn }</div>
       )
     } else {
-      return <p>Loading...</p>
+      return <p></p>
     }
   }
 }
