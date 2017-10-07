@@ -63,29 +63,86 @@ class Article extends Component {
   }
 }
 
+// Goofball article for routing testing
+class RoutedArticle extends Component {
+  constructor(props) {
+    super(props);
+    this.props = props;
+    this.params = props.match.params;
 
-const RoutedArticle = ({match}) => (
-  <Article title={match.params.title} />
-)
+    this.state = {
+      body: '',
+      title: 'default title',
+      date: 'default date',
+      tags: [],
+    }
+  }
+
+  render() {
+    return (
+      <Article title={this.state.title} date={this.state.date} />
+    )
+  }
+}
 
 
-const Articles = ({match}) => (
-  // TODO: This is the thing that'll fetch the articles from the JSON blob
-  // based on the URL that's hit. This will return one or more Articles
-  <div>
-    <Article
-      title="This is where a blog post would go"
-      date="1970-01-01"
-    />
-    <Article
-      title="This is another blog post!"
-      date="1970-01-01"
-      is_page
-    />
-    <p>
-      This is page number: {match.params.page}
-    </p>
-  </div>
-)
+class Articles extends Component {
+  constructor(props) {
+    super(props);
+
+    // Number of Articles per page
+    // TODO: Pull this from a configuration somehow
+    this.per_page = 5;
+
+    this.params = props.match.params;
+    this.state = {
+      articles: [],
+    }
+
+    console.log("page", this.params.page);
+  }
+
+  fetchArticles() {
+    // Fetch articles from JSON blob
+    fetch('/site.json')
+      .then((resp) => resp.json())
+      .then((blob) => {
+        let offset = 0;
+        if (this.params.page) {
+          offset = this.params.page * this.per_page;
+        }
+        console.log("offset", offset);
+        let posts = blob.posts.slice(offset, offset + this.per_page);
+
+        this.setState({articles: posts});
+      })
+      .catch(function(error) {
+        console.log("Oh no! " + error);
+      });
+  }
+
+  componentDidMount() {
+    this.fetchArticles();
+  }
+
+  componentWillReceiveProps(props) {
+    this.params = props.match.params;
+    this.fetchArticles();
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.articles.map(article =>
+          <Article
+            key={article.title}
+            title={article.title}
+            date="1970-01-01"
+          />
+        )}
+      </div>
+    )
+  }
+}
 
 export { Article, Articles, RoutedArticle };

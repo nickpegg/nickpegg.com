@@ -38,7 +38,7 @@ class App extends Component {
 
                   { /* Article routes */ }
                   <Route path="/page/:page" component={Articles} />
-                  <Route path="/:year/:month/:title.html" component={RoutedArticle} />
+                  <Route path="/:year/:month/:title" component={RoutedArticle} />
 
                   { /* 404 fallback */ }
                   <Route component={FourOhFour} />
