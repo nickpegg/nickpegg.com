@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   BrowserRouter as Router,
-  Link,
   Route,
   Switch
 } from 'react-router-dom';
@@ -15,6 +14,7 @@ import { Articles, FullArticle } from './Article';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { NavList, TagNav, HistoryNav } from './Nav';
+import { NotFound } from './NotFound';
 
 
 class App extends Component {
@@ -75,23 +75,6 @@ class About extends Component {
         <section>
           <p>
             Wowzers, this is an about page!
-          </p>
-        </section>
-      </article>
-    )
-  }
-}
-
-class NotFound extends Component {
-  render () {
-    return (
-      <article>
-        <header>
-          <h1>404 Oh No!</h1>
-        </header>
-        <section>
-          <p>
-            You're lost, bud. Why not try going back <Link to="/">Home</Link>?
           </p>
         </section>
       </article>
