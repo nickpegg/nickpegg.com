@@ -73,29 +73,38 @@ class TagNav extends Component {
 
 class HistoryNav extends Component {
   render() {
+    let page = 0;
+    if (this.props.match.params.page) {
+      page = parseInt(this.props.match.params.page, 10);
+    }
+    console.log('nav page', page);
+
     let left = "";
-    if (!this.props.newest) {
+    if (page !== 0) {
+      let last_href = "/page/" + (page - 1);
+      if (page === 1) {
+        last_href = "/";
+      }
+
       left = (
-          <a href="">
-            <Icon name="arrow-left" />
-            <span> newer posts</span>
-          </a>
+        <Link to={last_href}>
+          <Icon name="arrow-left" />
+          <span> newer posts</span>
+        </Link>
       )
     }
+
+    let next_href = "/page/" + (page + 1);
     return (
       <Row>
         { left }
-        <a className="u-pull-right" href="">
+        <Link className="u-pull-right" to={next_href}>
           <span>older posts </span>
           <Icon name="arrow-right" />
-        </a>
+        </Link>
       </Row>
     );
   }
 }
 
-const HistoryNavStart = ({match}) => (
-  <HistoryNav newest />
-)
-
-export { ListLink, NavList, TagNav, HistoryNav, HistoryNavStart };
+export { ListLink, NavList, TagNav, HistoryNav };

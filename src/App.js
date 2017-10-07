@@ -14,7 +14,7 @@ import { Container, Row, Column } from './skeleton';
 import { Articles, RoutedArticle } from './Article';
 import { Footer } from './Footer';
 import { Header } from './Header';
-import { NavList, TagNav, HistoryNav, HistoryNavStart } from './Nav';
+import { NavList, TagNav, HistoryNav } from './Nav';
 
 
 class App extends Component {
@@ -47,7 +47,7 @@ class App extends Component {
             </Row>
 
             { /* Display HistoryNav if this is a series of articles */ }
-            <Route exact path="/" component={HistoryNavStart} />
+            <Route exact path="/" component={HistoryNav} />
             <Route exact path="/page/:page" component={HistoryNav} />
           </Container>
 
