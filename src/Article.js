@@ -189,8 +189,6 @@ class Posts extends Component {
   }
 
   updateHistoryNav(page, hasMore) {
-    console.log("page" ,page);
-    console.log("more?", hasMore);
     // Update prev state
     let prev = null;
     if (page === 1) {
