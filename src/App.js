@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   BrowserRouter as Router,
   Route,
-  Switch
+  Switch,
+  withRouter
 } from 'react-router-dom';
 
 import hljs from 'highlight.js';
@@ -26,36 +27,38 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <div className="App">
-          <Header title={this.title} />
+        <ScrollToTop>
+          <div className="App">
+            <Header title={this.title} />
 
-          <Container>
-            <Row>
-              <Column width="two" className="nav">
-                <NavList />
-                <TagNav />
-              </Column>
-              <Column width="eight">
-                <Switch>
-                  <Route exact path="/" component={Posts} />
-                  { /* Page routes */ }
-                  <Route path="/about" component={About} />
+            <Container>
+              <Row>
+                <Column width="two" className="nav">
+                  <NavList />
+                  <TagNav />
+                </Column>
+                <Column width="eight">
+                  <Switch>
+                    <Route exact path="/" component={Posts} />
+                    { /* Page routes */ }
+                    <Route path="/about" component={About} />
 
-                  { /* Post routes */ }
-                  <Route path="/page/:page" component={Posts} />
-                  <Route path="/:year/:month/:slug" component={Post} />
+                    { /* Post routes */ }
+                    <Route path="/page/:page" component={Posts} />
+                    <Route path="/:year/:month/:slug" component={Post} />
 
-                  { /* 404 fallback */ }
-                  <Route component={NotFound} />
-                </Switch>
-              </Column>
-            </Row>
+                    { /* 404 fallback */ }
+                    <Route component={NotFound} />
+                  </Switch>
+                </Column>
+              </Row>
 
-          </Container>
+            </Container>
 
-          <Footer />
+            <Footer />
 
-        </div>
+          </div>
+        </ScrollToTop>
       </Router>
     );
   }
@@ -68,6 +71,19 @@ class App extends Component {
 
   }
 }
+
+class ScrollToTop extends Component {
+  componentDidUpdate(prevProps) {
+    if (this.props.location !== prevProps.location) {
+      window.scrollTo(0, 0);
+    }
+  }
+
+  render() {
+    return this.props.children
+  }
+}
+ScrollToTop = withRouter(ScrollToTop);
 
 // Dummy About page just for playing around with ReactRouter
 class About extends Component {
