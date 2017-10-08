@@ -11,11 +11,11 @@ import 'highlight.js/styles/github-gist.css';
 
 import { Container, Row, Column } from './skeleton';
 
-import { Post, Posts } from './Article';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { NavList, TagNav } from './Nav';
 import { NotFound } from './NotFound';
+import { Post, Posts } from './Post';
 
 
 class App extends Component {
