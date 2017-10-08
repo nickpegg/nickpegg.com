@@ -13,7 +13,7 @@ import { Container, Row, Column } from './skeleton';
 import { Post, Posts } from './Article';
 import { Footer } from './Footer';
 import { Header } from './Header';
-import { NavList, TagNav, HistoryNav } from './Nav';
+import { NavList, TagNav } from './Nav';
 import { NotFound } from './NotFound';
 
 
@@ -51,9 +51,6 @@ class App extends Component {
               </Column>
             </Row>
 
-            { /* Display HistoryNav if this is a series of articles */ }
-            <Route exact path="/" component={HistoryNav} />
-            <Route exact path="/page/:page" component={HistoryNav} />
           </Container>
 
           <Footer />

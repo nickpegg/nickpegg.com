@@ -4,7 +4,7 @@ import Markdown from 'react-markdown';
 import { Link } from 'react-router-dom';
 import slugify from 'slugify';
 
-import { ListLink } from './Nav';
+import { ListLink, HistoryNav } from './Nav';
 import { NotFound } from './NotFound';
 
 
@@ -149,12 +149,18 @@ class Posts extends Component {
 
     // Number of Articles per page
     // TODO: Pull this from a configuration somehow
-    this.per_page = 4;
+    this.perPage = 4;
 
     this.params = props.match.params;
     this.state = {
       posts: null,
+      prevHref: null,
+      nextHref: null,
     }
+  }
+
+  update() {
+    this.fetchPosts();
   }
 
   fetchPosts() {
@@ -163,22 +169,59 @@ class Posts extends Component {
       .then((resp) => resp.json())
       .then((blob) => {
         let offset = 0;
-        if (this.params.page) {
-          offset = this.params.page * this.per_page;
+        let page = parseInt(this.params.page, 10);
+        if (!page) {
+          page = 0;
         }
-        let posts = blob.posts.slice(offset, offset + this.per_page);
+
+        offset = page * this.perPage;
+        let posts = blob.posts.slice(offset, offset + this.perPage);
+
+        // Check to see if we have more posts after these
+        let nextOffset = (page + 1) * this.perPage;
+        let nextPosts = blob.posts.slice(nextOffset,
+          nextOffset + this.perPage);
+        let hasMore = nextPosts.length > 0;
+        this.updateHistoryNav(page, hasMore);
 
         this.setState({posts: posts});
       });
   }
 
+  updateHistoryNav(page, hasMore) {
+    console.log("page" ,page);
+    console.log("more?", hasMore);
+    // Update prev state
+    let prev = null;
+    if (page === 1) {
+      prev = "/";
+    } else if (page > 1) {
+      prev = "/page/" + (page - 1);
+    } else {
+      prev = null;
+    }
+
+    // Update next state
+    let next = null;
+    if (hasMore) {
+      next = "/page/" + (page + 1);
+    } else {
+      next = null;
+    }
+
+    this.setState({
+      nextHref: next,
+      prevHref: prev,
+    })
+  }
+
   componentDidMount() {
-    this.fetchPosts();
+    this.update();
   }
 
   componentWillReceiveProps(props) {
     this.params = props.match.params;
-    this.fetchPosts();
+    this.update();
   }
 
   render() {
@@ -197,7 +240,10 @@ class Posts extends Component {
       }
 
       return (
-        <div>{ jawn }</div>
+        <div>
+          { jawn }
+          <HistoryNav prev={this.state.prevHref} next={this.state.nextHref} />
+        </div>
       )
     } else {
       return <p></p>
