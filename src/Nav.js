@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import slugify from 'slugify';
 
 import Icon from 'react-fontawesome';
 
@@ -33,15 +34,43 @@ class RouterListLink extends Component {
 }
 
 class NavList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      pageLinks: null,
+    }
+  }
+
+  componentDidMount() {
+    fetch('/site.json')
+      .then(resp => resp.json())
+      .then(blob => {
+        let links = [];
+        for (let page of blob.pages) {
+          let slug = page.slug;
+          if (!slug) {
+            slug = slugify(page.title).toLowerCase();
+          }
+
+          if (page.parent == null) {
+            let href = "/" + slug;
+            links.push(<RouterListLink
+              name={page.title}
+              href={href}
+              key={slug}
+            />);
+          }
+        }
+
+        this.setState({pageLinks: links});
+      });
+  }
   render() {
-    // TODO: populate these dynamically based on root page names
-    // but keep Home first and RSS at the end
     return (
       <Row>
         <ul>
           <RouterListLink name="Home" href="/" />
-          <RouterListLink name="About" href="/about" />
-          <RouterListLink name="Projects" href="/projects" />
+          { this.state.pageLinks }
           <ListLink name="RSS" href="/rss.xml" icon="rss-square" />
         </ul>
       </Row>
