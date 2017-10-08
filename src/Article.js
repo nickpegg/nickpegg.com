@@ -232,17 +232,17 @@ class Posts extends Component {
         />
       );
 
-      let jawn = articles;
+      let jawn = (
+        <div>
+          {articles}
+          <HistoryNav prev={this.state.prevHref} next={this.state.nextHref} />
+        </div>
+      )
       if (articles.length === 0) {
         jawn = <NotFound />;
       }
 
-      return (
-        <div>
-          { jawn }
-          <HistoryNav prev={this.state.prevHref} next={this.state.nextHref} />
-        </div>
-      )
+      return jawn
     } else {
       return <p></p>
     }
