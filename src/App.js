@@ -16,6 +16,7 @@ import { Header } from './Header';
 import { NavList, TagNav } from './Nav';
 import { NotFound } from './NotFound';
 import { Post, Posts } from './Post';
+import { Page } from './Page';
 
 
 class App extends Component {
@@ -40,12 +41,13 @@ class App extends Component {
                 <Column width="eight">
                   <Switch>
                     <Route exact path="/" component={Posts} />
-                    { /* Page routes */ }
-                    <Route path="/about" component={About} />
 
                     { /* Post routes */ }
                     <Route path="/page/:page" component={Posts} />
                     <Route path="/:year/:month/:slug" component={Post} />
+
+                    { /* Page routes */ }
+                    <Route path="/:slug" component={Page} />
 
                     { /* 404 fallback */ }
                     <Route component={NotFound} />
@@ -85,22 +87,5 @@ class ScrollToTop extends Component {
 }
 ScrollToTop = withRouter(ScrollToTop);
 
-// Dummy About page just for playing around with ReactRouter
-class About extends Component {
-  render () {
-    return (
-      <article>
-        <header>
-          <h1>About me</h1>
-        </header>
-        <section>
-          <p>
-            Wowzers, this is an about page!
-          </p>
-        </section>
-      </article>
-    )
-  }
-}
 
 export default App;

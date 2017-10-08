@@ -48,7 +48,6 @@ class Article extends Component {
   }
 
   meta() {
-    // TODO: Fill this in with real metadata.
     // Also should this be hidden for pages? That will require some CSS tweaks
     let time_text = "Posted"
     if (this.props.is_page) {
@@ -65,7 +64,7 @@ class Article extends Component {
 
   tags() {
     let tags = this.props.article.tags;
-    if (tags.length === 0) {
+    if (!tags || tags.length === 0) {
       return;
     } else {
       return (
