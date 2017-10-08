@@ -1,3 +1,4 @@
+import hljs from 'highlight.js';
 import React, { Component } from 'react';
 import Markdown from 'react-markdown';
 import slugify from 'slugify';
@@ -45,6 +46,9 @@ class Page extends Component {
 
   componentDidMount() {
     this.fetchPage();
+    document.querySelectorAll('pre code').forEach(elm => {
+      hljs.highlightBlock(elm);
+    });
   }
 
   componentWillReceiveProps(props) {

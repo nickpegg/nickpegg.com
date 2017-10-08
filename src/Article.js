@@ -1,3 +1,4 @@
+import hljs from 'highlight.js';
 import React, { Component } from 'react';
 import Icon from 'react-fontawesome';
 import Markdown from 'react-markdown';
@@ -32,6 +33,12 @@ class Article extends Component {
         </section>
       </article>
     );
+  }
+
+  componentDidMount() {
+    document.querySelectorAll('pre code').forEach(elm => {
+      hljs.highlightBlock(elm);
+    });
   }
 
   postLink() {

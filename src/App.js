@@ -6,7 +6,6 @@ import {
   withRouter
 } from 'react-router-dom';
 
-import hljs from 'highlight.js';
 import 'highlight.js/styles/github-gist.css';
 
 import { Container, Row, Column } from './skeleton';
@@ -67,10 +66,6 @@ class App extends Component {
 
   componentDidMount() {
     document.title = this.title;
-
-    // Auto-highlight all <pre><code> blocks
-    hljs.initHighlightingOnLoad();
-
   }
 }
 
