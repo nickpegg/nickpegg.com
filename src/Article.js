@@ -90,7 +90,8 @@ class Post extends Component {
     this.params = props.match.params;
 
     this.state = {
-      post: null
+      post: null,
+      notFound: false,
     }
   }
 
@@ -115,6 +116,7 @@ class Post extends Component {
         if (!found) {
           console.log('post not found');
           /* TODO: return 404 */
+          this.setState({notFound: true});
         }
       });
   }
@@ -129,6 +131,10 @@ class Post extends Component {
   }
 
   render() {
+    if (this.state.notFound) {
+      return <NotFound />
+    }
+
     if (this.state.post) {
       return (
         <Article
