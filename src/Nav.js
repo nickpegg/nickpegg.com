@@ -15,19 +15,6 @@ class ListLink extends Component {
     }
 
     return (
-      <li> <a href={ this.props.href }>{ icon } { this.props.name }</a> </li>
-    );
-  }
-}
-
-class RouterListLink extends Component {
-  render () {
-    let icon = null;
-    if (this.props.icon) {
-      icon = <Icon name={ this.props.icon } />
-    }
-
-    return (
       <li> <Link to={ this.props.href }>{ icon } { this.props.name }</Link> </li>
     );
   }
@@ -54,7 +41,7 @@ class NavList extends Component {
 
           if (page.parent == null) {
             let href = "/" + slug;
-            links.push(<RouterListLink
+            links.push(<ListLink
               name={page.title}
               href={href}
               key={slug}
@@ -69,7 +56,7 @@ class NavList extends Component {
     return (
       <Row>
         <ul>
-          <RouterListLink name="Home" href="/" />
+          <ListLink name="Home" href="/" />
           { this.state.pageLinks }
           <ListLink name="RSS" href="/rss.xml" icon="rss-square" />
         </ul>
