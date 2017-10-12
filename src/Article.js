@@ -78,7 +78,7 @@ class Article extends Component {
         <div className="post-tags"> <Icon name="tags" />
           <ul>
             {tags.map(tag => (
-              <ListLink name={tag} key={tag} href="" />
+              <ListLink name={tag} key={tag} href={"/tag/" + tag} />
             ))}
           </ul>
         </div>
