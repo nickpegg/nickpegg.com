@@ -42,7 +42,10 @@ class App extends Component {
                     <Route exact path="/" component={Posts} />
 
                     { /* Post routes */ }
-                    <Route path="/page/:page" component={Posts} />
+                    <Route exact path="/page/:page" component={Posts} />
+                    <Route exact path="/tag/:tag" component={Posts} />
+                    <Route exact path="/tag/:tag/page/:page" component={Posts} />
+
                     <Route path="/:year/:month/:slug" component={Post} />
 
                     { /* Page routes */ }

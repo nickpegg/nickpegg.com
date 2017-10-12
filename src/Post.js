@@ -78,7 +78,7 @@ class Posts extends Component {
 
     // Number of Articles per page
     // TODO: Pull this from a configuration somehow
-    this.perPage = 4;
+    this.perPage = 5;
 
     this.params = props.match.params;
     this.state = {
@@ -97,33 +97,46 @@ class Posts extends Component {
     fetch('/site.json')
       .then((resp) => resp.json())
       .then((blob) => {
+        let posts = blob.posts;
         let offset = 0;
+
         let page = parseInt(this.params.page, 10);
         if (!page) {
           page = 0;
         }
-
         offset = page * this.perPage;
-        let posts = blob.posts.slice(offset, offset + this.perPage);
+
+        // if tag is set, filter posts down to that of that tag
+        if (this.params.tag) {
+          posts = posts.filter(p => (p.tags.includes(this.params.tag)));
+        }
+
+        // Grab the slice of posts for this page
+        let post_slice = posts.slice(offset, offset + this.perPage);
 
         // Check to see if we have more posts after these
         let nextOffset = (page + 1) * this.perPage;
-        let nextPosts = blob.posts.slice(nextOffset,
+        let nextPosts = posts.slice(nextOffset,
           nextOffset + this.perPage);
         let hasMore = nextPosts.length > 0;
         this.updateHistoryNav(page, hasMore);
 
-        this.setState({posts: posts});
+        this.setState({posts: post_slice});
       });
   }
 
   updateHistoryNav(page, hasMore) {
+    let prefix = "";
+    if (this.params.tag) {
+      prefix = "/tag/" + this.params.tag;
+    }
+
     // Update prev state
     let prev = null;
     if (page === 1) {
       prev = "/";
     } else if (page > 1) {
-      prev = "/page/" + (page - 1);
+      prev = prefix + "/page/" + (page - 1);
     } else {
       prev = null;
     }
@@ -131,7 +144,7 @@ class Posts extends Component {
     // Update next state
     let next = null;
     if (hasMore) {
-      next = "/page/" + (page + 1);
+      next = prefix + "/page/" + (page + 1);
     } else {
       next = null;
     }
