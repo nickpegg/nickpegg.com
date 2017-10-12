@@ -24,12 +24,20 @@ class Post extends Component {
       .then((blob) => {
         let found = false;
         for (let post of blob.posts) {
+          let date = new Date(post.date);
+          let year = date.getUTCFullYear();
+          let month = date.getUTCMonth() + 1;
+
           let slug = post.slug;
           if (!slug) {
             slug = slugify(post.title);
           }
 
-          if (slug === this.params.slug) {
+          if (
+            slug === this.params.slug
+            && year === Number(this.params.year)
+            && month === Number(this.params.month)
+          ) {
             this.setState({post: post})
             found = true;
             break
