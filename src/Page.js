@@ -1,9 +1,9 @@
 import hljs from 'highlight.js';
 import React, { Component } from 'react';
 import Markdown from 'react-markdown';
-import slugify from 'slugify';
 
 import { NotFound } from './NotFound';
+import { slugify } from './util';
 
 
 class Page extends Component {
@@ -25,7 +25,7 @@ class Page extends Component {
         for (let page of blob.pages) {
           let slug = page.slug;
           if (!slug) {
-            slug = slugify(page.title).toLowerCase();
+            slug = slugify(page.title);
           }
 
           if (slug === this.params.slug) {

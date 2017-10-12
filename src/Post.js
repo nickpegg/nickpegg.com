@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import slugify from 'slugify';
 
 import { Article } from './Article';
 import { HistoryNav } from './Nav';
 import { NotFound } from './NotFound';
+import { slugify } from './util';
 
 
 class Post extends Component {

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import slugify from 'slugify';
 
 import Icon from 'react-fontawesome';
 
 import { Row } from './skeleton';
+import { slugify } from './util';
 
 
 class ListLink extends Component {
@@ -36,7 +36,7 @@ class NavList extends Component {
         for (let page of blob.pages) {
           let slug = page.slug;
           if (!slug) {
-            slug = slugify(page.title).toLowerCase();
+            slug = slugify(page.title);
           }
 
           if (page.parent == null) {

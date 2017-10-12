@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import Icon from 'react-fontawesome';
 import Markdown from 'react-markdown';
 import { Link } from 'react-router-dom';
-import slugify from 'slugify';
 
 import { ListLink } from './Nav';
+import { slugify } from './util';
 
 
 class Article extends Component {
