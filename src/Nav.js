@@ -66,15 +66,30 @@ class NavList extends Component {
 }
 
 class TagNav extends Component {
+  constructor (props) {
+    super(props);
+
+    this.state = {
+      topTags: [
+        'Tag 1',
+        'Tag 2',
+        'Really long tag',
+        'Really really really long tag',
+        'Another tag',
+      ],
+    }
+  }
+
+  topTags () {
+  }
+
   render() {
     // TODO: Populate these tags from the top tags in the post
     let tags = (
       <ul>
-        <ListLink icon="tag" name="Tag 1" href="" />
-        <ListLink icon="tag" name="Tag 2" href="" />
-        <ListLink icon="tag" name="Really long tag" href="" />
-        <ListLink icon="tag" name="Really really really long tag" href="" />
-        <ListLink icon="tag" name="Another tag" href="" />
+        {this.state.topTags.map(tag => (
+          <ListLink icon="tag" key={tag} name={tag} href={"/tag/" + tag} />
+        ))}
       </ul>
     );
 
