@@ -46,6 +46,10 @@ class Article extends Component {
     let year = date.getUTCFullYear();
     let month = date.getUTCMonth() + 1;
 
+    if (month < 10) {
+      month = '0' + month.toString();
+    }
+
     let slug = this.props.article.slug;
     if (!slug) {
       slug = slugify(this.props.article.title);
