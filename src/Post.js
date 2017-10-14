@@ -15,6 +15,7 @@ class Post extends Component {
 
     this.state = {
       post: null,
+      title: '',
       notFound: false,
     }
   }
@@ -53,6 +54,11 @@ class Post extends Component {
     this.fetchPost();
   }
 
+  componentWillUnmount() {
+    // Reset the document title to the default
+    document.title = config.title;
+  }
+
   componentWillReceiveProps(props) {
     this.params = props.match.params;
     this.fetchPost();
@@ -64,6 +70,8 @@ class Post extends Component {
     }
 
     if (this.state.post) {
+      console.log(this.state.post);
+      document.title = `${config.title} - ${this.state.post.title}`;
       return (
         <Article
           article={this.state.post}

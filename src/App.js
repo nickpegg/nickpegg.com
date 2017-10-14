@@ -62,10 +62,6 @@ class App extends Component {
       </Router>
     );
   }
-
-  componentDidMount() {
-    document.title = config.title;
-  }
 }
 
 class ScrollToTop extends Component {
