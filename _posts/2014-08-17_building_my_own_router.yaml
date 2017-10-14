@@ -1,0 +1,132 @@
+date: 2014-08-19
+tags:
+  - linux
+  - networking
+title: Building My Own Home Router, Part 1
+---
+This is the first of a series of blog posts on building my own home router from scratch using Debian. My hopes are that by sharing my experiences, it can help others in this endeavor.
+---
+I've been kicking around the idea of building my own router for a while now, mostly due to the fact that my trusty [WRT54GL][1] is grealy limted by what it can do with its measly 4 MB of flash and weak CPU. After months of casually searching and trying (unsuccessfully) to re-purpose some old hardware, I finally found what I've been looking for: a cheap-ish, low-power, rackmount server with more than one NIC.
+
+# The Hardware
+
+* [Intel D2500CCE Mini-ITX motherboard in a rackmount case][2]
+* [Intel 7260-ac Mini-PCIe card with antenna][3] - there are some issues with this, which I'll cover in a later post
+
+I can't believe that I didn't think to check the various Mini-ITX resellers for something like this, because this is almost exactly what I've always been looking for. I got a 2-NIC board since I'm cheap and already have a gigabit switch, but you can easily find boards with more ports if you don't mind shelling out the extra cash.
+
+Once the equipment got to my apartment, I slapped in some old laptop RAM and a spare 2.5" drive and got Debian installed.
+
+
+# 802.3 and IPv4
+
+The first order of business was to replicate the core functionality of my old router: IPv4 routing and Ethernet connectivity. The plan was to use eth0 as my public interface (plugged into my cable modem) and eth1 as my internal interface. Before I even plugged in anything, I wrote a basic `/etc/network/interfaces` file.
+
+```
+auto lo
+iface lo inet loopback
+
+# outside
+allow-hotplug eth0
+iface eth0 inet dhcp
+        hwaddress ether AA:BB:CC:DD:EE:FF
+        dns-search home.nickpegg.com nickpegg.com
+        dns-nameservers 8.8.8.8 8.8.4.4
+
+# inside
+auto eth1
+iface eth1 inet static
+        address 10.0.0.1
+        netmask 255.255.255.0
+```
+
+Note the `hwaddress ether` line there. Since my ISP (whose name shall not be spoken (not Voldemort, but [just as evil][4])) locks me to a single MAC address, my new router had to spoof my old router's MAC address, which was spoofed from my laptop that I originally set the connection up with. If you seemingly can't get a DHCP lease on your public interface, this is likely the problem.
+
+
+Now that I had my interfaces configured and rarin' to go, I had to make sure that my ip{,6}tables rules were in order before plugging in.
+
+#### rules.v4
+```
+*nat
+:PREROUTING ACCEPT [2:125]
+:INPUT ACCEPT [1:65]
+:OUTPUT ACCEPT [4:260]
+:POSTROUTING ACCEPT [0:0]
+-A POSTROUTING -o eth0 -j MASQUERADE
+COMMIT
+*filter
+:INPUT DROP [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -i lo -j ACCEPT
+-A INPUT -i eth1 -j ACCEPT
+-A INPUT -i eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i eth0 -p icmp -m icmp --icmp-type 8 -j ACCEPT
+-A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i eth1 -o eth0 -j ACCEPT
+COMMIT
+```
+
+#### rules.v6
+```
+*filter
+:INPUT DROP [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -i lo -j ACCEPT
+-A INPUT -i eth1 -j ACCEPT
+COMMIT
+```
+
+The above rules are my output from `iptables-save` and `ip6tables-save`, and are fully compatible with the respective restore programs. Debian even has a nice package called `iptables-persistent` which will load these rules on boot if you stash them as `rules.v4` and `rules.v6` in `/etc/iptables`!
+
+To better understand these rules, it helps to have the [Netfilter packet flow diagram][5] in front of you. There are some simple goals with these:
+
+## IPv4 Filters
+
+* Allow traffic coming from loopback or the inside interface
+* Only allow traffic outside->inside if it pertains to an existing in->out connection
+* **Secret sauce** - that MASQURADE line enables NAT, so my private addresses can hide behind the one public address that my ISP gives me
+
+
+## IPv6 Filters
+
+* Just drop everything for now unless it comes from the inside and is destined for the router itself
+
+
+Of course, before I could have a fully-functional internet connection, I had to get DNS set up. And I guess a DHCP server would be nice to have before my leases all expire and everything drops its IP.
+
+Luckily, there's a software package which is geared towards these very tasks: `dnsmasq`! Getting it running was as easy as running `apt-get install dnsmasq` and `service dnsmasq start`, which was enough to get DNS working. To get DHCP working, I created two config files in `/etc/dnsmasq.d/`:
+
+#### dhcp.conf
+```
+# My DHCP configs
+dhcp-range=10.0.0.110,10.0.0.250,12h
+
+# options for DNS
+dhcp-option=option:domain-search,home.nickpegg.com,nickpegg.com
+
+# Static DHCP entries
+dhcp-host=00:24:1D:7D:5F:C3,10.0.0.10,host1
+dhcp-host=88:30:8A:22:2E:74,10.0.0.11,host2
+dhcp-host=00:23:54:1A:16:2D,10.0.0.12,host3
+```
+
+#### interface.conf
+```
+# Only allow DNS/DHCP requests from the inside interface
+interface=eth1
+```
+
+With all of that, I had a functioning IPv4 router and could do important things again, like idle on IRC and browse Reddit.
+
+This is just the beginning though! You should go check out [part 2][6] of this series where I get 802.11 working.
+
+
+
+[1]: http://en.wikipedia.org/wiki/Wrt54gl
+[2]: http://mitxpc.com/proddetail.asp?prod=ER1UD2500DLM02
+[3]: http://mitxpc.com/proddetail.asp?prod=INTWIFI7260AC
+[4]: http://www.comcast.com/
+[5]: http://upload.wikimedia.org/wikipedia/commons/3/37/Netfilter-packet-flow.svg
+[6]: http://nickpegg.com/2014/8/building_my_own_home_router,_part_2_-_802.11.html

@@ -1,0 +1,11 @@
+date: 2010-06-23
+tags: []
+title: Verifying Google Voice
+---
+I've been struggling getting my work phone number verified with Google Voice. The way that number verification works is that Google Voice calls you and asks
+you to enter the two-digit code that's displayed on the website. But for some reason when I get a call on my outside line and I press a number button, it
+doesn't send that DTMF tone. Instead it tries to place another call.
+
+My solution? I found a DTMF tone generator online and I played the code DTMF tones through my computer speakers.
+
+It's nice to see that these old phone tricks still work.

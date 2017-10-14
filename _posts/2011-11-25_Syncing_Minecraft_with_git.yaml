@@ -1,0 +1,78 @@
+date: 2011-11-25
+tags:
+  - git
+  - games
+title: Syncing Minecraft Saves with Git
+---
+I've been playing Minecraft for a while and after doing some travelling, I've
+ran into the issue where I'd like to syncronize my Minecraft saves across
+computers.
+---
+I already use git for software version control, so why not shoehorn Minecraft
+into it? Not only would I get easy syncronization, I would also get version
+control so if I seriously mung something up, I can revert back to a previous
+save! Here's how I did it.
+
+First, I had to make sure git was installed on all of my machines. Luckily
+on Linux git is usually provided in the package repository (git-core), but
+since my desktop also runs Windows (for gaming), I use
+[msysgit](http://code.google.com/p/msysgit/). For example,
+on Debian/Ubuntu all you need to do is:
+
+```
+sudo apt-get install git-core
+```
+
+Once git was installed, I decided to go with a centralized approach since I
+want one 'official' spot where I can push and pull my Mincraft saves to.
+I already have a server
+from the wonderful folks at [Linode](http://linode.com), so I just
+initialized a bare (centralized) repository on there:
+
+```
+cd /path/to/repos/minecraft
+git init --bare
+```
+
+Then, since I already have Minecraft installed on my desktop with quite a few
+saves, I had to clone the central repository, add my saves, commit, and then
+push back to the central repository.
+
+```
+cd /home/nick/.minecraft/
+git clone nick@nickpegg.com:/path/to/repos/minecraft temp
+mv temp/.git ./
+```
+
+Since you can't clone a repository into a non-empty folder, I had to clone it
+to a temporary folder and then copy the .git folder from there into my
+.minecraft folder. Now that my local repository was setup, I added the files
+I wanted to syncronize.
+
+```
+git add saves screenshots stats texturepacks options.txt servers.dat
+git commit -m 'Initial commit'
+```
+
+Once I had the files commited, all I needed to do was push them up to the
+central repository on my server.
+
+```
+git push
+```
+
+And now I have my Minecraft files in a central spot! Now every time I'm done
+playing a bit, all I have to do to sync my files up is:
+
+```
+git commit -a -m 'Played a bit'
+git push
+```
+
+Now, on other machines, all I need to do is clone once, ``git pull``
+before playing,
+and then commit and push when I'm done playing!
+
+Easy peasy. Of course, you can do more fancy things with git since it's a
+full-blown version control system. If you feel inlined to play with those
+features, go read some [documentation](http://gitref.org/).

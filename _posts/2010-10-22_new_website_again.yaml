@@ -1,0 +1,15 @@
+date: 2010-10-22
+tags:
+  - programming
+title: New Website (Again!)
+---
+Yes, it's that time of year. Time to change my website design
+ _yet again_!
+
+I got tired of dealing with Wordpress and wrote my own static page generator
+in Python, dubbed [Posty](http://github.com/nickpegg/posty). I know, I'm
+kind of [re-inventing the wheel](http://ringce.com/hyde) here and there
+are some [really nice solutions](http://github.com/mojombo/jekyll/wiki) to
+this problem, but why not just make something for making's sake?
+
+Plus, I just feel _cool_ using Markdown and YAML to update my website.

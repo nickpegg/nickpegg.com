@@ -1,0 +1,73 @@
+---
+title: Projects
+url: /projects/
+---
+Here's a decent number of the projects I've worked on in the past.
+**This is mostly ancient and you should probably check out my [GitHub](https://github.com/nickpegg) profile instead**
+
+### Posty (2010)
+Links: [GitHub](https://github.com/nickpegg/posty)
+
+Just a little static page generator I wrote when I got sick of using
+Wordpress. It's quick, it's dirty, but it does what I need it to.
+
+I guess I'm just never satisfied with using pre-made software packages
+to run my personal website.
+
+### Beertraq (2009)
+Links: [Website](https://beertraq.com/)
+
+A website to keep track of which beers you've tried, compare with others,
+read their reviews, and discover new beer. Started in the summer of 2009,
+inspired by The Flying Saucer's UFO Club.
+
+### Intelligent Drink Dispenser (2009)
+(No code available, sorry)
+
+This is my Computer Engineering Senior Design project at the University of
+Missouri-Rolla. It's basically a robotic bartender which keeps track of
+customers (via RFID) and their purchases. This was an idea that Richard Allen
+and I have been kicking around for a few years, but it's finally come to life.
+
+### Nick Tracker (Python, Java) (2008)
+(No code available, sorry)
+
+Keeps track of where my phone's at, which is usually where I am. Server side
+script written in Python, client written in Java for the Android phone platform.
+Since I've written this, two better applications have hit the Android Market,
+including Google Latitude. I've stopped work on this because I don't feel like
+re-inventing the wheel.
+
+### CPU Usage Meter (2006)
+Links: [Project page](/cpu-usage-meter/), [Linux source](/media/projects/cpu_meter.tar.gz)
+
+LEDs on the front of my computer case displaying the CPU load.
+
+### Serial IR Receiver (2006)
+Links: [Project page](/ir-receiver/)
+
+A simple serial-based LIRC-compatible IR reciever.
+
+### ServCheck (PHP)
+Links: [servCheck.tar.gz](/media/projects/servCheck.tar.gz)
+
+A simple service checker written in PHP. Attempts to open a socket with the
+configured hosts and ports, and outputs an HTML file showing which services
+are up and down. I originally wrote this for the TerminalUnix site to show what's
+working and what isn't.
+
+### TerminalUnix (PHP)
+A PHP and MySQL driven site, functioning as a web front-end and community site for
+the TerminalUnix server. I started it because I was sick of all of these Content
+Management Systems having features that I didn't want. I sat down during Spring Break
+of 2006 and coded a PHP login system, not knowing about the wonders of some of the PHP
+features. Eventually I coded nice things in such as MySQL access (instead of a flat
+text file), a user adminstration system, and even a news sytem.
+
+Unfortunately I don't plan on releasing the source code since it's a big hard-coded mess.
+
+### N-Queens solver (C++)
+Links: [nqueens.tar.gz](/media/projects/nqueens.tar.gz)
+
+Another Data Structures homework assignment. This solves (brute-forces) the
+[N-Queens Problem](https://www.google.com/search?q=n-queens+problem) using recursion and backtracking.

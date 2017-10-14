@@ -1,0 +1,26 @@
+date: 2009-05-11
+tags:
+  - idd
+title: Intelligent Drink Dispenser in the news!
+---
+So, I've been pretty quiet about my Intelligent Drink Dispenser project so far,
+mostly because there was going to be a competition between myself and
+[Clint Rutkas](http://betterthaneveryone.com/archive/2009/04/11/856.aspx) and
+I didn't want to give the enemy any details.
+---
+Well, the cat's out of the bag: [http://news.mst.edu/2009/05/students_create_smart_way_to_m.html](http://news.mst.edu/2009/05/students_create_smart_way_to_m.html)
+
+The communications department of my university, Missouri S&T (formerly UMR), gets
+alerts from Google News whenever someone mentions the university's name and since
+Clint did just that, his post showed up in their email. After talking with the
+director of communications, he decided to run the story. I gotta say, it's a
+pretty great way for my Senior Design class to wind down.
+
+For those interested in the details of the Intelligent Drink Dispenser, stay
+tuned! I'll be posting more information about it soon.
+
+Side note: since the story got posted, my server's been chugging along to serve
+up my website, almost maxing out the upload on my poor cable internet connection.
+Here's the traffic graph from my router:
+
+![Traffic graph](/media/img/idd_hardware/traffic_graph.png)

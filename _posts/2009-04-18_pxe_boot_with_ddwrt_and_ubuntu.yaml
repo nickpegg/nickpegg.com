@@ -1,0 +1,71 @@
+date: 2009-04-18
+tags:
+  - servers
+  - linux
+title: PXE boot with DD-WRT and Ubuntu
+---
+After spending all afternoon fighting with my new server and my DD-WRT router,
+I finally figured out how to get my server to PXE boot and fire up an Ubuntu
+install. All it really involved was setting up TFTP on another box (my desktop,
+to be specific), adding a line to DD-WRT's DNSMasq options, and configuring the
+damn server to boot from PXE, which was the hardest part. Luckily, for those of
+you who are struggling with it, here's how I did it.
+---
+### Setting up the PXE client
+
+I had to get my server to boot PXE in the first place. For most people, this just
+means poking around in the BIOS. Not for me though.
+
+After poking around the HP site, I've found out that my server is a first
+generation Proliant DL360. Since it's an older machine, this means that it doesn't
+have a built-in BIOS config, but I had to actually download the old Compaq SmartStart
+5.5 CD. I had to hunt around the HP website, but to save you the trouble, you can snag it here:
+
+[http://ftp.hp.com/pub/products/servers/supportsoftware/ZIP/smartstart-5.50-0.zip](http://ftp.hp.com/pub/products/servers/supportsoftware/ZIP/smartstart-5.50-0.zip)
+
+Once you boot from the CD, you'll want to go into the System Configuration
+Utility when prompted. From there, it's just like a giant BIOS. Just turn PXE
+on for whatever ethernet port you're using and it's rarin' to go.
+
+### Setting up the TFTP server
+
+Once my server was setup for PXE booting, I had to set up a tftp server for it
+to grab the boot image from. Since I was using my desktop, which runs Ubuntu, as
+a host, setup was pretty easy. I just used tftpd-hpa per the Ubuntu wiki's recommendation.
+
+        # sudo aptitude install tftpd-hpa
+
+I had to also edit the configuration file at /etc/default/tftpd-hpa. Mine looks like this:
+
+        #Defaults for tftpd-hpa
+        RUN_DAEMON="yes"
+        OPTIONS="-l -s /var/lib/tftpboot"
+
+Since I was wanting to PXE boot into an Ubuntu install, I had to extract the
+install files into /var/lib/tftpboot as I put in the config file. For example, the
+netboot image files for Ubuntu 9.04 can be found here:
+
+[http://archive.ubuntu.com/ubuntu/dists/jaunty/main/installer-i386/current/images/netboot/netboot.tar.gz](http://archive.ubuntu.com/ubuntu/dists/jaunty/main/installer-i386/current/images/netboot/netboot.tar.gz)
+
+### Setting up the the DHCP server
+
+DD-WRT uses dnsmasq for DHCP, so if you have a system which uses it too it shouldn't
+be too much different to setup. Watch out, though! I initially screwed up my configuration
+which really messed with my router.
+
+All you have to do is add a line to the Additional DNSMasq Options found under the Services
+tab. If you're running plain dnsmasq, just add the line to your dnsmasq.conf file. The line
+goes a little something like this:
+
+        dhcp-boot=pxelinux.0,mybox,10.0.0.100
+
+where pxelinux.0 is the file to boot, mybox is the hostname of the tftp server, and 10.0.0.100
+is the IP address of the tftp server. You could probably get away with only specifying the
+hostname or just leaving it blank and supplying the IP address. You can also get more fancy
+and send certain boot images to certain machines, etc. This way works just fine on a home
+network like mine.
+
+Once you get this all setup, any machines that try to PXE boot will receive the image and
+boot to it. If you used the Ubuntu install image like I did, you'll be able to install Ubuntu
+on any PXE-capable machine or even boot into a rescue shell! Just remember that if you can't
+setup a boot order (like my Proliant) make sure to disable the PXE boot in dnsmasq before rebooting.

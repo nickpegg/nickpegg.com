@@ -1,0 +1,136 @@
+date: 2015-08-16
+tags:
+  - linux
+  - networking
+  - ipv6
+title: Building My Own Home Router - IPv6 Tunnel
+---
+Continuing on my adventure of running my own self-built router at home, I decided to get IPv6 running on my home network. As of writing this blog post, my ISP doesn't do native IPv6 yet so I decided to go with Hurricane Electric's [IPv6 Tunnel Broker](https://tunnelbroker.net) service, which provides you with an IPv6-in-IPv4 tunnel.
+---
+# Creating the tunnel
+
+The first step is going to [HE's Tunnel Broker website][1] and creating a regular tunnel. Set your IPv4 endpoint to your router's public IP address and be sure to pick a tunnel server close to you.
+
+Once the tunnel's been created, you'll want to grab the following information:
+
+* Server IPv4 address
+* Server IPv6 Address (this will be your route to the outside world)
+* Client IPv6 Address (this will be your router's address)
+* Routed /64 (this is the block of IPv6 addresses for your network)
+
+If you run multiple subnets, you can create a /48 block, but for my uses I just need a single subnet (/64 block), so that's what I'll be covering.
+
+
+# Updating the firewall
+
+Before we even fire up the tunnel, we want to make sure it'll be secure when it comes up. This is a little different from my [first post][2] which covered IPv4 since we won't be using a NAT, but instead directly routing packets.
+
+The goals of these firewall rules will be to:
+
+* Allow traffic related to already-established outbound connections
+* Allow ICMPv6 Destination Unreachable
+* Allow ICMPv6 Echo Request
+* Allow ICMPv6 Neighbor Soliciation and Advertisement on the local network (interface br0)
+* Allow all traffic coming from the local network (interface br0) out the world (interface he-ipv6)
+* Drop everything else
+
+Since we are doing regular routing, all rules on the INPUT chain will manage traffic directed to the router itself and all rules on the FORWARD chain will manage routed traffic (between the local network and the internet).
+
+Here's what my `/etc/iptables/rules.v6` file looks like with all these rules applied. Note that the default policy on `INPUT` and `FORWARD` are `DROP`.
+
+```
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type echo-request -j ACCEPT
+-A INPUT -p ipv6-icmp -m icmp6 --icmpv6-type destination-unreachable -j ACCEPT
+-A INPUT -i br0 -p ipv6-icmp -m icmp6 --icmpv6-type neighbour-solicitation -j ACCEPT
+-A INPUT -i br0 -p ipv6-icmp -m icmp6 --icmpv6-type neighbour-advertisement -j ACCEPT
+-A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -p ipv6-icmp -m icmp6 --icmpv6-type echo-request -j ACCEPT
+-A FORWARD -p ipv6-icmp -m icmp6 --icmpv6-type destination-unreachable -j ACCEPT
+-A FORWARD -i br0 -o he-ipv6 -j ACCEPT
+COMMIT
+```
+
+
+# Updating the `interfaces` file
+
+Once you have the firewall rules in place, it's time to update the `/etc/network/interfaces` file for the tunnel. There are two additions that we need to make: An IPv6 address for your internal network's interface and a virtual interface for the tunnel.
+
+This is where you'll use the details you got from the Tunnel Broker website. Everything will mostly be directly used, however you need to choose an address from the Routed /64 block for your router's internal interface. The first one in the block is convenient, so if your block is `2001:470:6661:7274::/64` then your router's address will be `2001:470:6661:7274::1` (`2001:470:6661:7274::0` is technically the first address, but using 1 is less confusing since it's similar to IPv4 addressing).
+
+Here's what my `/etc/network/interfaces` files looks like after those changes, the IPv6 additions at the end. Be sure to replace the variables in the file with the values you got from the Tunnel Broker website.
+
+```
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# outside
+allow-hotplug eth0
+iface eth0 inet dhcp
+  hwaddress ether AA:BB:CC:DD:EE:FF
+	dns-search home.nickpegg.com nickpegg.com
+	dns-nameservers 8.8.8.8 8.8.4.4
+
+iface eth0 inet6 auto
+
+iface eth1 inet manual
+iface wlan0 inet manual
+
+auto br0
+iface br0 inet static
+	address 10.0.0.1
+	netmask 255.255.255.0
+	bridge_ports eth1
+
+iface br0 inet6 static
+	address 2001:470:6661:7274::1
+	netmask 64
+
+auto he-ipv6
+iface he-ipv6 inet6 v4tunnel
+	address $CLIENT_IPV6_ADDRESS
+	netmask 64
+	endpoint $SERVER_IPV4_ADDRESS
+	gateway $SERVER_IPV6_ADDRESS
+```
+
+Once you make these changes you'll be able to run these commands to start/restart your interfaces to fire up the tunnel:
+
+* `sudo ifdown br0; sudo ifup br0`
+* `sudo ifup he-ipv6`
+
+Note that if you're SSH'd into your server, you should run the first command in screen because you're going to lose connectivity for a few seconds. Once your tunnel's up, you should be able to `ping6 ipv6.google.com` and get a response.
+
+
+# Setting up Router Advertisements
+Getting the router talking IPv6 is only the first half. Now we need to have the devices on our local network pick up IPv6 addresses using a mechanism called [Router Advertisement][3]. Fortunately there's a Linux package called `radvd` which is incredibly easy to set up.
+
+Here's what a basic `/etc/radvd.conf` will look like. Again, be sure to replace `$ROUTED_64` with the block you were assigned via the Tunnel Broker website.
+
+```
+interface br0
+{
+  AdvSendAdvert on;
+
+  prefix $ROUTED_64
+  {
+  };
+};
+```
+
+Yeah, that's it. Start the `radvd` service and everything should get an IPv6 address. From a machine that's not your router, you can `ping ipv6.google.com` to verify that connectivity's working.
+
+
+Now that's all done, you have a router that talks IPv6 with the world and you can feel a little bit better about the whole [IPv4 exhaustion][4] issue.
+
+
+[1]: https://tunnelbroker.net/
+[2]: https://nickpegg.com/2014/8/building_my_own_home_router,_part_1.html
+[3]: https://tools.ietf.org/html/rfc4861#section-6
+[4]: https://en.wikipedia.org/wiki/IPv4_address_exhaustion

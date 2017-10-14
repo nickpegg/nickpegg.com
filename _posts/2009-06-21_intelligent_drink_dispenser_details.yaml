@@ -1,0 +1,59 @@
+date: 2009-06-21
+title: Intelligent Drink Dispenser Details
+---
+I said that I'd post details on my Intelligent Drink Dispenser project "soon". That
+was over a month ago. Whoops. I blame my [new internship](http://nucoryamato.com/) for that.
+
+For those of you not in the know, the Intelligent Drink Dispenser was my senior design
+project at Missouri University of Science and Technology (which will forever in my heart
+be University of Missouri-Rolla). It's basically a smart drink dispenser that's capable
+of mixing, charging customers, telling the bar/restaurant owner when they need to refill
+the machine, etc.
+---
+If you don't feel like reading the details and just want to look at the pretty pictures,
+you can check out my [Picasa album](http://picasaweb.google.com/nick.pegg/IntelligentDrinkDispenser)
+or watch the [Youtube video](http://www.youtube.com/watch?v=79H5oAS_Y6k).
+
+The theoretical process is that the customer would go to order a drink, and since they're
+a new customer, they'd have to be entered into the system by the person running the machine
+(bartender, or waiting staff). They would have their name and credit card information taken,
+and would then be assigned a drinking vessel based on the first drink they were wanting to
+order. Multiple vessels could also be assigned to the same person. Once the customer is
+setup and is ready to purchase their drink, they set the fluid vessel on the marked reader
+area on the dispenser. The system then recognizes the vessel, who it belongs to, asks the
+customer for the last four digits of their credit card, and then asks the customer which
+drink they'd like to order. The customer then chooses what drink they'd like to have, the
+system double-checks that the vessel is the right size, and pours it.
+
+Security and privacy was one of the major goals of the project. The only information stored
+about the user is their name, a secure hash of their credit card number, the last four digits
+of ther card, and their drink order history.
+
+The project itself can pretty much be split into two major components: hardware and software.
+I would probably say the hardware is more interesting and posed more challenges for us. The
+first thing is how the heck do you pour the fluid? If you take into consideration that we only
+had a $300 budget for the whole shebang, it's not an easy task. The way that the professionals
+do it is with Carbon Dioxide-powered pumps, which are controlled by electronic valves and supplied
+by a tank and pressure regulator. Three pumps, valves, and the feed system would cost us well
+over $300. Our original idea was to use 24 VDC sprinkler valves, but that idea failed because the
+sprinkler valves by their nature require back-pressure to operate. We came up with the idea of using
+windshield washer pumps made for cars. Since this was supposed to be a prototype, we didn't have to
+worry about our components being food-grade. That, coupled with the fact that the pumps operate on
+12V DC and are relatively inexpensive ($15-25 a pop), that's what we went with for our design.
+
+The rest of the hardware design was fairly straightfoward. We used an 8051 microcontroller to control
+everything, an FTDI UM232 to handle the PC communications and a Parallax RFID reader to read the
+tags that are on the bottom of the drinking vessels. The serial communication is pretty interesting
+since the USB-to-serial device has only one serial port but two devices to talk to (the RFID reader,
+and the PC). Our solution was to have the receive line go to the RFID reader (to the PC), and have
+the transmit line go to the 8051 (from the PC). This meant that our 8051 couldn't talk back, so we
+had to hope that things were working right. Additionally, Richard developed a simple serial language
+for the 8051. If the 8051 received an ASCII 0 through 7, it would turn on that pin on the port we
+were using. This could easily be modified to operate with all the ports on the 8051 to control 24
+pumps, or even with some addressing logic to control a huge number of pumps.
+
+Below is our hardware schematic, which should give you some idea of how it's all connected.
+
+![Hardware Design](/media/img/idd_hardware/FinalDesign.png)
+
+In my next post, I'll be talking about the software design. Stay tuned!

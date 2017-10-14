@@ -1,0 +1,50 @@
+---
+title: LIRC IR Receiver
+slug: ir-receiver
+url: /projects/ir-receiver/
+parent: Projects
+---
+Since my computer was used as a media hub for my two roommates and I my Sophmore
+year at UMR, I figured being able to use my A/V receiver's remote control to
+control the computer would be nice. After doing some quick research, (Win)LIRC
+seemed to be the best solution. Many people either buy a pre-made receiver, or
+build their own receiver that fits on the end of a serial cable.
+
+### Parts List
+
+* [A suitable IR receiver module](http://lirc.org/receivers.html) (Vishay 1738 is popular)
+* 1N4148 diode
+* 4.7 uF capacitor
+* 4.7 kOhm resistor
+* 7805 5V voltage regulator
+
+### Construction
+
+Construction is fairly easy. I personally used a Vishay TSOP2238 IR receiver
+module and a [instructions](http://lnx.manoweb.com/lirc/) found freely on the web. Below is the circuit diagram
+that I used. In the schematic, the - pin (GND) on the IR receiver goes to the serial
+GND, the +/Vs pin receives the +5V from the voltage regulator, and the Data pin is
+connected to the DCD on the serial port. Beware that many IR receivers have different
+pinouts! More details on what does what can be found at the [LIRC guide](http://lirc.org/receivers.html). Once the
+receiver is complete, the easiest way to position it is to connect it to a serial
+extension cable and mount it somewhere.
+Schematic:
+
+### Usage
+
+Since I primarily used Windows for day-to-day tasks back then, I used [WinLIRC](http://winlirc.sf.net/) to
+handle the receiver. It's configuration files are identical to LIRC. Pre-made
+configuration files are available for a [wide range of remotes](http://lirc.org/receivers.html), but your remote can be
+programmed manually if it needs to be.
+
+My two main media players were [Winamp](http://winamp.com/) and [Media Player Classic](http://sourceforge.net/project/showfiles.php?group_id=82303&package_id=84358), which both have some
+sort of support for LIRC. Media Player Classic has it built-in (configuration in the
+Keys options), but Winamp requires a plugin. Luckily, there is one available on the
+[WinLIRC website](http://winlirc.sf.net/).
+
+### Links
+
+* [LIRC](http://lirc.org/)
+* [WinLIRC - A Windows port of LIRC](http://winlirc.sf.net/)
+* [List of known working IR modules](http://lirc.org/receivers.html)
+* [Nice construction instructions](http://lnx.manoweb.com/lirc/)

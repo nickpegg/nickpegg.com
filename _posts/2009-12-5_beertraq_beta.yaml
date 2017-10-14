@@ -1,0 +1,32 @@
+date: 2009-12-05
+tags:
+  - programming
+  - beertraq
+title: Beertraq Beta!
+---
+I'm glad to announce that my recent pet project, Beertraq, is now in a
+(somewhat closed) beta stage! The basic idea is there and functioning,
+but the extra functionality isn't done and it's far from polished.
+Nonetheless, it's time to take her for a test drive!
+---
+
+> Note from future-Nick
+>
+> I got lazy and never finished Beertraq, and Untappd ended up releasing not long after. Though it took them _years_ to implement a barcode scanner in the app, which was going to be a core thing in Beertraq.
+
+
+So what is Beertraq, you ask? It's a way for you to keep track of which
+beers you've tasted, compare those with others, read beer reviews, and
+most importantly discover new beers to try. I originally got the idea
+from The Flying Saucer's UFO Club, where members work toward a goal of
+drinking 200 different beers. Once they complete the task, they get their
+name on a plate which gets put on the wall of the bar. The cool part about
+the UFO Club is that it's all computerized, using a magstripe card to login
+at a kiosk in the bar. You can also log in to their website to check your
+progress and read reviews on there. I figured that if The Flying Saucer can
+have that system for their bar, I could do the same for the world.
+
+If you're interested in becoming a BeerTraq beta user, send an email to
+beertraq (at) beertraq (dot) com with the email address you want to use for
+your account. All I ask is that you give feedback by filling out issue requests
+with bugs you find or suggestions you might have.

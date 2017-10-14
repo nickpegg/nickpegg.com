@@ -1,0 +1,151 @@
+date: 2014-08-22
+tags:
+  - linux
+  - networking
+title: Building My Own Home Router, Part 2 - 802.11
+---
+In my [last post](http://nickpegg.com/2014/8/building_my_own_home_router,_part_1.html) I talked about getting my home router up and forwarding packets from nothing and getting my computers connected via Ethernet. The next step is to get 802.11 (WiFi) working.
+---
+
+# Hardware Caveats
+
+In my last post, I mentioned that I got the Intel 7260-ac card, which I've had some problems with. Intel decided to code into the EEPROM that the card can only use channels that make it compliant with *every* country's laws, and the firmware and Linux driver dutifully read this information and comply. This means that the card can only work in AP mode on channels 1-11, and will NOT in the 5GHz band. This means that you're stuck to the noisy 2.4 GHz band and can't even use 802.11ac (since it requires 5GHz).
+
+I've seen some various blog and forum posts where the OpenWRT people have gotten around this on cards with atheros chipsets since it's just a check in the driver. However, in the small amount of kernel driver hacking I've done, I've been unsuccessful.
+
+**Long story short**, watch which card you pick up and make sure people have had luck making it do what you want to, preferrably without having to patch kernel drivers.
+
+
+# Network Changes
+
+Since you're turning your router into a wireless access point, you have two options to connect clients to your network: split them off into their own network segment in a different subnet, or bridge the wireless interface in with your inside network and let wireless users mingle with your wired users. I chose the latter, since it was simpler.
+
+The basic idea is that you create a bridge device (`br0`) and bridge in your `eth1` and `wlan0` interfaces. My updated config shows the changes you need to make to `/etc/network/interfaces`:
+
+```
+auto lo
+iface lo inet loopback
+
+# outside
+allow-hotplug eth0
+iface eth0 inet dhcp
+    hwaddress ether AA:BB:CC:DD:EE:FF
+    dns-search home.nickpegg.com nickpegg.com
+    dns-nameservers 8.8.8.8 8.8.4.4
+
+# inside
+iface eth1 inet manual
+iface wlan0 inet manual
+
+auto br0
+iface br0 inet static
+    address 10.0.0.1
+    netmask 255.255.255.0
+    bridge_ports eth1
+```
+
+Note that `br0` has pretty much taken the place of `eth1` in the config. Also, we don't bridge in `wlan0` since our access point daemon will take care of that.
+
+Along with this change in `/etc/network/interfaces`, don't forget to also change your dnsmasq settings so that it listens on `br0` instead of `eth1`.
+
+Install the `bridge-utils` package if you haven't already and restart networking. Congrats, your router is now a one port network switch!
+
+
+# Firewall Changes
+
+Since our inside interface is now `br0`, we have to tweak our firewall rules a bit.
+
+#### rules.v4
+```
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+-A POSTROUTING -o eth0 -j MASQUERADE
+COMMIT
+*filter
+:INPUT DROP [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -i lo -j ACCEPT
+-A INPUT -i eth1 -j ACCEPT
+-A INPUT -i br0 -j ACCEPT
+-A INPUT -i eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i eth0 -p icmp -m icmp --icmp-type 8 -j ACCEPT
+-A FORWARD -i eth0 -o br0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i br0 -o eth0 -j ACCEPT
+COMMIT
+```
+
+#### rules.v6
+```
+*filter
+:INPUT DROP [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -i lo -j ACCEPT
+-A INPUT -i eth1 -j ACCEPT
+-A INPUT -i br0 -j ACCEPT
+COMMIT
+```
+
+
+# HostAPd Config
+
+Thanks to [`hostapd`][2], getting your wireless card running in AP mode is a cinch! It's just a package install away in most cases, and the configuration isn't *too* terrible. Below is my config, annotated to make it easier to understand.
+
+```
+# Set up some logging. VERY useful to see why things aren't working.
+logger_syslog=-1
+logger_syslog_level=2
+logger_stdout=-1
+logger_stdout_level=2
+
+# Which interface to use and which bridge to join
+interface=wlan0
+bridge=br0
+
+# Use this driver for AP stuff. This corresponds to the mac80211 driver
+# which most newer cards support.
+driver=nl80211
+
+# 802.11 mode and channel, pretty self-explanatory
+hw_mode=g
+country_code=US
+channel=11
+
+
+# Set and broadcast the SSID. Stupid double-negatives...
+ssid=test_net
+ignore_broadcast_ssid=0
+
+# 802.11N stuff - Try 40 MHz channels, fall back to 20 MHz
+ieee80211n=1
+ht_capab=[HT40-][SHORT-GI-20][SHORT-GI-40]
+
+# WPA Authentication
+auth_algs=1                 # Open authentication, no WEP
+wpa=2                       # WPA2 only, set to 3 for WPA+WPA2
+wpa_passphrase=xxxxxxxxxxx  # Hah! Like I'd put this in a gist.
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP           # Cipher for WPA2 (AES in this case)
+
+# Don't use a MAC ACL
+macaddr_acl=0
+```
+
+The things to watch out for are the settings that are ORs of bits, like `auth_algs` and `wpa`. When setting up your own AP, it's a good idea to check out the [example config][3] to see what each setting does and what the defaults are.
+
+My config doesn't include any 5 GHz settings, so you'll have to figure those out on your own if you're lucky enough to have a card that supports it. If I get mine working, I'll make another post with those settings.
+
+Once you're done with configuration, fire up `hostapd` with `service hostpad start`. If everything was successful, you should see `wlan0` bridged in (use the `brctl show` command to check) and the network should be joinable by one of your wireless devices. If you don't see that, you'll want to check `/var/log/syslog` to see what hostapd is complaining about.
+
+
+And there you have it, a router with wireless! Next up is IPv6 support, so stay tuned for part 3.
+
+
+
+[1]: http://nickpegg.com/2014/8/building_my_own_home_router,_part_1.html
+[2]: http://wireless.kernel.org/en/users/Documentation/hostapd
+[3]: http://w1.fi/gitweb/gitweb.cgi?p=hostap.git;a=blob_plain;f=hostapd/hostapd.conf

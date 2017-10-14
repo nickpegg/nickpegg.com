@@ -1,0 +1,17 @@
+date: 2009-08-18
+tags:
+  - linux
+title: 'Stupid Linux Trick #5245'
+---
+Want to share what you're doing with another person logged into the same system? All you need is a FIFO, cat, and script.
+
+On your session:
+        mkfifo foo
+        script -f foo
+
+On the viewer's session:
+
+        cat foo
+
+The viewer can then see everything that you're doing as if they're looking over your shoulder!
+

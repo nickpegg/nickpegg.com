@@ -1,0 +1,93 @@
+date: 2009-06-21
+title: Intelligent Drink Dispenser - Software Design
+---
+The other major half of the Intelligent Drink Dispenser project was the software side
+of things. As with the hardware, there were some things we had to consider when
+beginning the design of things.
+
+---
+What language should we use? Should this be a GUI
+application or web application? If we go with a GUI application, what operating system
+should we target?
+
+We decided that since we only had a semester to get everything done, we needed a
+framework to take care of the more nitty-gritty stuff. We eventually decided to go
+with the Django web framework, which uses the Python programming language. Python is
+a language we all knew and Jon and I had used Django in the past. Also, since our
+'final product' would be highly based on a client-server model, it makes sense to
+go with a web app since the server can be in a central location with many clients
+connecting to it.
+
+The most important thing to us was the fact that Django abstracts the database into models
+for us. No having to mess around with raw SQL, we just run some queries and get our data
+from the models as if they're just plain ol' objects. After some thought, we came up with
+our models and their relationships:
+
+![Database layout](/media/img/idd_software/db.png)
+
+The development of the application was fairly straight-forward. It was just a standard
+Django app after all. The interesting part was interfacing with the hardware.
+
+If you remember from my post talking about the hardware side, we used an FTDI UM232
+USB-to-serial converter. Lucky for us, there's a Linux kernel module which represents this
+device as a virtual serial port, which made our jobs a whole lot easier since there's
+existing serial libraries for Python (like pyserial). We ended up just writing a couple of
+functions, one to read the RFID tag from the serial port, and one that takes in a Drink id
+and then communicates to the microcontroller to pour it. The microcontroller's fairly dumb,
+just taking a number and turning that pin on, or turning all of the pins off if a non-valid
+character is sent, as you can see in the pourDrink function:
+
+        def pourDrink(id, serialPort=DEVICE):
+          """Pours the drink given by the specified ID"""
+
+          # Seconds per mL of the motors, found experimentally
+          # These should be in the database or a config file instead of hardcoded...
+          secondsPerML = []
+          secondsPerML.append(9.858/350.0)  # Pump 0
+          secondsPerML.append(9.858/350.0)  # Pump 1
+          secondsPerML.append(6.385/210.0)  # Pump 2
+
+          components = DrinkComponent.objects.filter(drink=id)
+
+          for c in components:
+            stock = IngredientStock.objects.filter(ingredient=c.ingredient)
+            total = 0
+
+            for s in stock:
+              total += s.amount
+
+            if total < c.amount:
+              raise UnableToPour("Not enough " + c.ingredient.name + " to pour drink!")
+
+          port = serial.Serial(serialPort, 2400)
+          if not port.isOpen():
+            raise UnableToPour("Unable to open serial port!")
+
+          for c in components:
+            stock = IngredientStock.objects.filter(ingredient=c.ingredient)
+            leftToPour = c.amount
+
+            startTime = time.time()
+
+            for s in stock:
+              port.write(str(s.slot))
+              if leftToPour < s.amount:
+                time.sleep(secondsPerML[s.slot]*leftToPour)
+                s.amount = s.amount - leftToPour
+                s.save()
+
+                break
+              else:
+                time.sleep(secondsPerML[s.slot]*(s.amount - ))
+                leftToPour = leftToPour - s.amount - 30
+
+                s.amount = 0
+                s.save()
+
+            print "Time to pour:" + str(time.time() - startTime)
+          port.write("\n")
+          port.close()
+
+Not exactly the most precise in terms of pouring accuracy, but it gets the job
+done as a prototype. As for the rest of the code, there's not too much else that's
+very interesting. I may release the code at some point in the future.

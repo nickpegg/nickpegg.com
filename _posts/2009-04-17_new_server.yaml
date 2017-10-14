@@ -1,0 +1,26 @@
+date: 2009-04-17
+tags:
+  - servers
+title: New Server
+---
+Thanks to a generous donation from [Richard Allen](http://rsaxvc.net/), I now have a new server.
+---
+![Compaq Proliant DL360](/media/img/compaq.jpg)
+
+It's a Compaq Proliant DL360. From what I can tell of it's past, a place where another
+friend of mine was working was getting rid of their old hardware and he snagged a bunch.
+Richard got some of the servers, had no use for this one, and then gave it to me a couple
+of days ago.
+
+It's probably a first generation DL360, but that doesn't mean it sucks. It's got dual
+Pentium IIIs running at 1.266 GHz each, 512 MB of RAM, and two 18.3 GB SCSI drives running
+in RAID1. It's quite an upgrade from my current server, which is dual P3 450 MHz with a
+little less than 512 MB of RAM. The best part of the whole thing, though, is the Remote
+Insight Lights-Out Edition II card that came with it. It's a PCI-X card that redirects
+video, keyboard, and mouse from the system and supplies it to a web interface. This means
+that no matter where I am, I can get a physical terminal to my server. Plus, if I plug an
+external power supply to it, I can even turn on my server remotely!
+
+I'll probably be moving everything from my current server over to the new one. Since I'm
+mirroring and then cutting over, there shouldn't be any problems with any of the services
+that my box supplies.

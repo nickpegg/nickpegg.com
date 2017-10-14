@@ -1,0 +1,174 @@
+---
+title: Kegerator
+url: /projects/kegerator/
+parent: Projects
+---
+I've been homebrewing for a couple of years now, and my least favorite part of
+the whole process is definitely the bottling. Each 5 gallon batch has
+approximately 55 bottles that you have to clean, santize, fill, cap, clean
+again, and put in boxes. I've gotten sick and tired of doing that for every
+batch of beer, so I decided to make the jump and build myself a kegerator.
+
+![Kegerator mostly finished][0]
+
+Building a kegerator is fairly simple, only requiring some plumbing and
+woodworking. The only hard part is the cost. Below is the cost for a
+three-keg setup similar to my current two-keg setup.
+
+### Updates
+
+#### Feb 20, 2011
+Got the kegerator built yesterday minus a temperature controller. I got a
+little drill-happy and accidentally made three faucet holes instead of two.
+Oops, I guess I'll have to put in that third faucet.
+
+### Links
+* [Flickr set](https://www.flickr.com/photos/nickpegg/sets/72157625971333921/)
+
+### Bill of Materials
+
+<table border="1">
+	<tr>
+		<th>Qty</th>
+		<th>Cost Each</th>
+		<th>Item</th>
+	</tr>
+	<tr>
+		<td>1</th>
+		<td>$198</td>
+		<td>GE 7.0 cubic ft freezer</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>$90</td>
+		<td>5 pound CO2 tank</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>$75</td>
+		<td>Dual gauge CO2 regulator</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>$47</td>
+		<td>3-way CO2 distributor</td>
+	<tr>
+		<td>3</td>
+		<td>$40</td>
+		<td>Used 5 gallon soda keg</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>$6.50</td>
+		<td>Ball lock gas disconnect - MFL</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>$6.50</td>
+		<td>Ball lock liquid disconnect - MFL</td>
+	</tr>
+	<tr>
+		<td>7</td>
+		<td>$1.30</td>
+		<td>1/4" barb-to-MFL connector</td>
+	</tr>
+	<tr>
+		<td>7</td>
+		<td>$0.25</td>
+		<td>Flared nylon washers for MFL connections</td>
+	<tr>
+		<td>3</td>
+		<td>$20</td>
+		<td>Stainless steel faucet shank</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>$2.25</td>
+		<td>1/4" barbed shank tail piece and hex nut</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>$0.10</td>
+		<td>Rubber shank washer</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>$31.50</td>
+		<td>Perlick beer faucet</td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>$2</td>
+		<td>Economy tap handle</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>$6.42</td>
+		<td>12' 2x8</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>$3.37</td>
+		<td>Roll of weather stripping</td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>$5.65</td>
+		<td>25' roll of poly ice maker tubing</td>
+	</tr>
+	<tr>
+		<td>14</td>
+		<td>$0.65</td>
+		<td>1/4" to 1/2" hose clamp</td>
+	</tr>
+	<tr>
+		<th align="left">Total</th>
+		<th align="left">$758.09</th>
+		<td></td>
+	</tr>
+</table>
+
+### Construction
+
+By far the most popular way to build a kegerator outside of complete
+fabrication is to take an existing chest freezer and add a collar between the
+freezer and the original lid. This is what I did as seen below.
+
+![Hinges][1]
+
+An added bonus to the collar method is that you now have a wooden platform to
+add your faucets and other items without harming the original freezer, in case
+you decide to sell it later or actually use it for storing food. When building
+the collar, you'll want to use something like a 2x8 to have enough clearance
+for the old hinges to attach to the wood.
+
+To help keep the cold air in the kegerator, it's a good idea to seal the
+collar. I just put some weather stripping down where the collar rests on the
+freezer and filled the collar joints with some extra oil pan sealant I had
+laying around. The weather stripping is nice because if you're not quite a
+master woodworker and can't be bothered to get the collar exactly square, it
+helps fill in your gaps.
+
+Once the collar's on and the faucets are installed, it's just a matter of
+connecting everything. Don't forget to use your washers to get a good seal! You
+can hand-tighten the MFL connections, but it might be a better idea to tighten
+them with a pair of pliers.
+
+### Pressure Testing
+
+Once everything's together, you'll want to pressure test the entire dispensing
+system. What I did was fill the kegs with water and pressurize the whole system,
+and do some test pours. If you have any leaks, you'll either hear air hissing
+or see water leaking out.
+
+![Pressure testing][2]
+
+In the case that it is an air leak and you're not
+sure where it's coming from, disconnect things one by one until the
+hissing stops. The part that you last disconnected is the faulty one, so make
+sure that everything's tight on there, especially if it's a hose clamp on a
+barbed connection.
+
+[0]: https://farm6.static.flickr.com/5135/5462665976_d11faea2aa.jpg "Mostly finished"
+[1]: https://farm6.static.flickr.com/5132/5462060669_436dbe852f.jpg
+[2]: https://farm6.static.flickr.com/5053/5462065415_efefbb9675.jpg "Pressure testing"

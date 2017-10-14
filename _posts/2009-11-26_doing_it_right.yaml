@@ -1,0 +1,35 @@
+date: 2009-11-26
+tags:
+  - servers
+  - linux
+title: Moving Servers and Doing It Right
+---
+Well, I finally bit the bullet and got a Linode account. So far I'm pretty
+happy with it. I figured that with the costs of power and bandwidth, I was
+almost spending $20/month to run my old server on my own hardware.
+Incidentally, the lowest-grade Linode VM costs that much and is enough to
+suit my needs.
+---
+So now that I've been setting up a webserver from scratch again, I'm doing
+it right this time. I'm setting up some monitoring software to notify me when
+things go down, I'm no longer relying on myself for DNS (no more dynamic IPs!),
+and I'm also branching out and trying an alternative webserver.
+
+The webserver in question is [Cherokee](http://cherokee-project.com/) which claims
+to use less memory and
+perform better than Apache. It sure does use less memory, but as a down side
+it doesn't have a native PHP module, so I'm required to use FastCGI for that
+purpose. Right now, there's five php-cgi processes running each using about
+25-30 MB. This wouldn't be a problem except that I've only got 360 MB of memory
+to play with. On the plus side its got a pretty sweet admin interface with wizards
+to help you set up things like WordPress, Drupal, Ruby on Rails, Django, etc. and
+you can setup some pretty complex rules for what and how files should be hosted.
+
+On the monitoring side of things, I'm using [Munin](http://munin.projects.linpro.no/) to monitor the various
+[stats on the server](http://terminalunix.com/munin/), [Piwik](http://piwik.org/) for website visit statistics, and I plan on getting [Monit](http://mmonit.com/monit/) going
+for service monitoring. It's a bit more important now that I keep and eye on memory
+and data transfer now that I'm limited on that. Also, if some process goes wild and
+starts using crazy amounts of CPU power and memory, I'll be able to catch it.
+
+Unfortunately when you move servers, you have to move everything that was running
+on them. I'm still in that process, but it's been going pretty smoothly.

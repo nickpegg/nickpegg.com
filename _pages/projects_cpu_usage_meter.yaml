@@ -1,0 +1,84 @@
+---
+title: CPU Usage Meter
+url: /projects/cpu-usage-meter/
+parent: Projects
+---
+Back in the day, there was a little obscure operating system called BeOS. The
+company which made the OS was brave enough to put it on their own hardware, too.
+This was dubbed the [BeBox](https://en.wikipedia.org/wiki/Bebox). Among all the
+neat doohickies on the computer were two CPU load meters (one for each processor).
+Now, how cool would it be to have a computer with those?
+
+__Very.__
+
+### Download
+Note: Linux code makes use of libserial and libstatgrab. Both must be installed for
+program to work/compile. The UM245R device uses the ftdi_sio driver. It's in the
+2.6 kernel tree, so it should (hopefully) be detected when you plug the device in.
+
+USB controller program:
+
+* [Linux code and executable](/media/projects/cpu_meter.tar.gz)
+* Windows code removed due to buginess
+
+### Updates
+
+#### Status Update - Nov 27 2007
+
+Wow, it's been almost a year since I've put work on this. I decided to finally write
+code to make it work under Linux. I ended up throwing out the notion of trying to
+use libusb. After 4 hours of research and code hacking, it worked!
+
+#### Status Update - Dec 08 2006
+
+The hardware works and the software works (kinda). Once I get around to cleaning up
+some of the code and adding some documentation, I'll start uploading stuff. Stay tuned!
+
+#### Status Update - Dec 02 2006
+
+Got the hardware working on a breadboard. Using DLP's test program, various patterns
+were able to be sent. Video coming soon!
+
+### Statistics:
+* Cost: $27.69
+* Lines of code (Linux): 83
+* Lines of code (Windows): 1503
+* Sleep lost: Unknown
+
+### Hardware Design
+The hardware is pretty simple. Using an UM245R, most of the work is done for you. The
+[UM245R](https://www.ftdichip.com/Products/EvaluationKits/UM245R.htm) takes in USB data
+and outputs it on the 8 data pins, and those 8 pins directly drive the LEDs. It's not
+quite as simple as that, since there's all sorts of protocol with Ready-to-Read and
+Ready-to-Write and Read and Write pins that go high and low. I just cheated and used
+at 555 timer to generate a clock signal on the RD pin to give me the data. I just
+lucked out and the UM245R outputs the last data if there's no new data available.
+
+[Circuit Design](/media/img/cpu_meter/circuit.png)
+
+[Testing the circuit](/media/img/cpu_meter/testing.jpg)
+
+### Software
+As with any hardware, there needs to be software which controls it. For the Windows
+code, I decided to use [LibUSB](https://libusb.sf.net/) to help me with this project. Programming with LibUSB
+is fairly straightforward, which helps since the documentation is rather spotty. Along
+with LibUSB, I also took the Queue class from [nicklib](/projects/) and wrote a UsbDevice class to
+help handle failures better. This stuff can be found in the source package above.
+
+After wrangling with libusb on the Windows side of things, I decided to throw out
+that idea on the Linux client. It turns out that FTDI makes a driver for the UM245R
+called ftdi_sio which creates a virtual serial interface. I used this along with
+libserial and libstatgrab to get it working.
+
+The Linux code is rather simple and only does CPU usage. I'm planning on extending
+it to do things such as music visualization. This of course means writing some sort
+of user interface and probably using threads.
+
+### Pictures
+Some pictures of the final product:
+
+![Final Product](/media/img/cpu_meter/1.jpg) ![Final Product](/media/img/cpu_meter/2.jpg)
+
+![Final Product](/media/img/cpu_meter/3.jpg) ![Final Product](/media/img/cpu_meter/4.jpg)
+
+![Final Product](/media/img/cpu_meter/5.jpg)

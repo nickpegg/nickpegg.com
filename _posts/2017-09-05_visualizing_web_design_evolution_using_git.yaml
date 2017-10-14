@@ -1,0 +1,72 @@
+date: 2017-09-05
+tags:
+  - linux
+  - git
+title: Visualizing Web Design Evolution Using Git
+---
+
+My website here, as of the time of writing this, is still based on a design I made back in 2010, and is rendered using my [static site generator](http://github.com/nickpegg/posty) that I haven't touched in nearly as long. The site's served its purpose pretty well, but it's kind of a mess; It's unreadable on mobile devices, the CSS causes some weird inconsistencies, and the static site generator is no where near my current standards. So since this is a personal project I have the liberty of throwing it all in the trash and starting over (and learning new things along the way!).
+---
+Since my weakest area is front-end (design, Javascript, CSS that doesn't look like it was written by a crazy person, etc.), I decided to jump in there, doing a couple of experiments. I ended up spending the better part of a weekend fiddling with HTML, playing with a couple of CSS frameworks to see what I liked, and incessantly bugging my friend [Brian](https://bokstuff.com) for help. Eventually I got something that I thought looked pretty good and got the 'final' version checked into git.
+
+So you want to know the cool part about git? If you use it right, you have a bunch of commits containing the full history of what you're building! And with a bit of magic you can come up with something like this:
+
+[![Progress so far](/media/img/design_vis/progress.small.gif)](/media/img/design_vis/progress.gif)
+
+(click on image to see the full size version)
+
+Neat, huh? So how the heck did I manage to pull this off? With some shell scripting wizardry!
+
+Since all of my design is in a single HTML file, `index.html`, it's easy to comb through the history with the `git log` command. And to get the commit hashes to iterate over them, just add in some `grep`, `awk`, and `tac` to reverse-sort them (from oldest to newest).
+
+```
+git log -- index.html | grep commit | grep -v initial | awk '{print $2}' | tac
+```
+
+Okay, cool, so now we can flip through the history of our `index.html`, now how do we make an animated GIF of it? Well, an animation is just a set of images, so we need to figure out how to turn our HTML into an image a bunch of times. This is where [wkhtmltopdf](https://wkhtmltopdf.org/) comes in handy! The name's kind of a mouthful, but it's a tool that uses WebKit to render HTML and output that to a PDF (or an image). It's super simple to use! Just give it a URL or file name, and then a file to output to, and it does the rest.
+
+```
+wkhtmltoimage --width 1920 --height 1080 index.html index${NUM}.png
+```
+
+Alright, now we've got a bunch of images, how do we string those together into a GIF? For things like this, I always turn to ImageMagick's `convert` tool, which is the swiss-army-knife of image manipulation. It turns out that if you pass it a bunch of still images and a filename that ends in `.gif`, it just knows to make a GIF! Incredible! Since we want it to slowly go through the changes so you can play spot-the-difference, we add in a `-delay 100` to the command to tell it to wait 100 tens of milliseconds between each frame.
+
+```
+convert -delay 100 index*.png progress.gif
+```
+
+Add in some hackery to remove duplicates (because the rendered page may not change if you change the HTML) and to add a pause of the last frame, and this is what I came up with:
+
+```
+#!/bin/bash
+
+# requires that imagemagick and wkhtmltopdf are installed
+
+mkdir -p progress
+git checkout master
+
+mkhtmltoimage --crop-w 1920 --crop-h 1080 https://nickpegg.com progress/0000.png
+
+count=0
+commits=$(git log | grep commit | grep -v initial | awk '{print $2}' | tac)
+
+for commit in $(echo $commits | xargs); do
+  git checkout "$commit"
+  i=$((++count))
+  wkhtmltoimage --crop-w 1920 --crop-h 1080 index.html "progress/$(printf "%04d" "$count").png"
+done
+
+# Magical one-liner to remove duplicates
+md5sum progress/* | \
+  sort | \
+  awk 'BEGIN{lasthash = ""} $1 == lasthash {print $2} {lasthash = $1}' | \
+  xargs rm
+
+# Add an artificial pause by copying the last file a few times
+for i in $(seq $((count+1)) $((count+5))); do
+  cp progress/$(printf "%04d" "$count").png progress/$(printf "%04d" "$i").png
+done
+
+convert -delay 100 progress/*png progress.gif
+git checkout master
+```
