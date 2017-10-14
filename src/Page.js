@@ -2,6 +2,7 @@ import hljs from 'highlight.js';
 import React, { Component } from 'react';
 import Markdown from 'react-markdown';
 
+import config from './config';
 import { NotFound } from './NotFound';
 import { slugify } from './util';
 
@@ -51,6 +52,10 @@ class Page extends Component {
     });
   }
 
+  componentWillUnmount() {
+    document.title = config.title;
+  }
+
   componentWillReceiveProps(props) {
     this.params = props.match.params;
     this.fetchPage();
@@ -62,6 +67,7 @@ class Page extends Component {
     }
 
     if (this.state.page) {
+      document.title = `${config.title} - ${this.state.page.title}`;
       return (
         <article>
           <header>
