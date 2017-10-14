@@ -21,6 +21,11 @@ import { Page } from './Page';
 
 class App extends Component {
   render() {
+    // Ensure the title is something based on the configured title
+    if (!document.title.startsWith(config.title)) {
+      document.title = config.title;
+    }
+
     return (
       <Router>
         <ScrollToTop>
