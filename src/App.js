@@ -10,6 +10,7 @@ import 'highlight.js/styles/github-gist.css';
 
 import { Container, Row, Column } from './skeleton';
 
+import config from './config';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { NavList, TagNav } from './Nav';
@@ -19,17 +20,12 @@ import { Page } from './Page';
 
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.title = 'Nick Pegg';
-  }
-
   render() {
     return (
       <Router>
         <ScrollToTop>
           <div className="App">
-            <Header title={this.title} />
+            <Header title={config.title} />
 
             <Container>
               <Row>
@@ -68,7 +64,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    document.title = this.title;
+    document.title = config.title;
   }
 }
 

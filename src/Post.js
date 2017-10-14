@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import config from './config';
 import { Article } from './Article';
 import { HistoryNav } from './Nav';
 import { NotFound } from './NotFound';
@@ -44,11 +45,7 @@ class Post extends Component {
           }
         }
 
-        if (!found) {
-          console.log('post not found');
-          /* TODO: return 404 */
-          this.setState({notFound: true});
-        }
+        this.setState({notFound: !found});
       });
   }
 
@@ -84,10 +81,6 @@ class Posts extends Component {
   constructor(props) {
     super(props);
 
-    // Number of Articles per page
-    // TODO: Pull this from a configuration somehow
-    this.perPage = 5;
-
     this.params = props.match.params;
     this.state = {
       posts: null,
@@ -112,7 +105,7 @@ class Posts extends Component {
         if (!page) {
           page = 0;
         }
-        offset = page * this.perPage;
+        offset = page * config.numPostsPerPage;
 
         // if tag is set, filter posts down to that of that tag
         if (this.params.tag) {
@@ -120,12 +113,12 @@ class Posts extends Component {
         }
 
         // Grab the slice of posts for this page
-        let post_slice = posts.slice(offset, offset + this.perPage);
+        let post_slice = posts.slice(offset, offset + config.numPostsPerPage);
 
         // Check to see if we have more posts after these
-        let nextOffset = (page + 1) * this.perPage;
+        let nextOffset = (page + 1) * config.numPostsPerPage;
         let nextPosts = posts.slice(nextOffset,
-          nextOffset + this.perPage);
+          nextOffset + config.numPostsPerPage);
         let hasMore = nextPosts.length > 0;
         this.updateHistoryNav(page, hasMore);
 

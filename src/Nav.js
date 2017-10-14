@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import Icon from 'react-fontawesome';
 
+import config from './config';
 import { Row } from './skeleton';
 import { slugify } from './util';
 
@@ -68,11 +69,6 @@ class NavList extends Component {
 class TagNav extends Component {
   constructor (props) {
     super(props);
-
-    // TODO: fetch this number from config
-    // Number of top tags to display
-    this.numTop = 5;
-
     this.state = {
       topTags: [],
     }
@@ -118,7 +114,7 @@ class TagNav extends Component {
         tags = tags.map(t => t[0]);
 
         // Get top N
-        tags = tags.slice(0, this.numTop);
+        tags = tags.slice(0, config.numTopTags);
 
         this.setState({topTags: tags});
       });
