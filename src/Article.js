@@ -58,16 +58,28 @@ class Article extends Component {
     return `/${year}/${month}/${slug}`;
   }
 
-  meta() {
-    // Also should this be hidden for pages? That will require some CSS tweaks
-    let time_text = "Posted"
-    if (this.props.is_page) {
-      time_text = "Updated"
+  date_string() {
+    let date = new Date(this.props.article.date);
+    let year = date.getUTCFullYear();
+    let month = date.getUTCMonth() + 1;
+    let day = date.getUTCDay() + 1;
+
+    if (month < 10) {
+      month = '0' + month.toString();
     }
+
+    if (day < 10) {
+      day = '0' + day.toString();
+    }
+    return `${year}-${month}-${day}`
+  }
+
+  meta() {
+    let time_text = "Posted";
 
     return (
       <div className="post-meta">
-        <time>{ time_text } { this.props.article.date }</time>
+        <time>{ time_text } { this.date_string() }</time>
         { this.tags() }
       </div>
     );
