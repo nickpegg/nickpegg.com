@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "highlight.js": "^9.12.0",
+    "js-yaml": "^3.10.0",
+    "mz": "^2.7.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-fontawesome": "^1.6.1",
@@ -15,7 +17,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build_site": "scripts/build_site.js",
+    "build_code": "react-scripts build",
+    "build": "scripts/build_site.js && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
