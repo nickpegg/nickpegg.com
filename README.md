@@ -1,5 +1,5 @@
 # nickpegg.com
 
-This is the source for my personal website.
+This is the source for my personal website, which is powered by a static site
+generator I wrote called [Posty](https://github.com/nickpegg/posty).
 
-It's currently a work in progress and not yet live. All of the blog post and page metadata will eventually live here.
