@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ site.title }} - {% block page_title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css">
+
+    <link rel="stylesheet" href="{{ "css/normalize.css" | media_url }}" />
+    <link rel="stylesheet" href="{{ "css/skeleton.css" | media_url }}" />
+    <link rel="stylesheet" href="{{ "css/font-awesome.css" | media_url }}" />
+
+    <link rel="stylesheet" href="{{ "css/index.css" | media_url }}" />
+  </head>
+  <body>
+    <div class="page-header">
+      <div class="container">
+        <a href="{{ site.base_url }}">
+          <h1>{{ site.title }}</h1>
+        </a>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="main" class="row">
+        <div class="two columns nav">
+          <div class="row">
+            <ul>
+              <li>
+                <a href="{{ site.base_url }}">
+                  Home
+                </a>
+              </li>
+              {% for page in site.pages %}
+              {% if page.parent == None %}
+              <li>
+                <a href="{{ page.url() }}">
+                  {{ page.title }}
+                </a>
+              </li>
+              {% endif %}
+              {% endfor %}
+              <li>
+                <a href="/rss.xml">
+                  <i class="fa fa-rss-square"></i>
+                  RSS
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="row">
+            <h5 class="nav-header">Top Tags</h5>
+            <ul>
+            {% for tag in site.tags[:5] %}
+              <li>
+                <a href="/tag/{{ tag }}/">
+                  <i class="fa fa-tag"></i>
+                  {{ tag }}
+                </a>
+              </li>
+            {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="eight columns">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
+      <!-- end main -->
+
+    </div>
+
+    <div class="page-footer">
+      <div class="container">
+        <i class="fa fa-copyright"></i> 2009 - 2018 Nick Pegg
+      </div>
+      <div>
+        Powered by <a href="https://github.com/nickpegg/posty">Posty</a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block page_title %}Posts{% endblock %}
+
+{% block content %}
+  {% set read_more = True %}
+
+  {% for post in posts %}
+    {% with post_content = post.blurb|markdown %}
+      {% include "post_base.html" %}
+    {% endwith %}
+  {% endfor %}
+
+  <div class="row">
+  {% if prev_page_url %}
+    <a href="{{ prev_page_url }}">
+      <i class="fa fa-arrow-left"></i>
+      newer posts
+    </a>
+  {% endif %}
+  {% if next_page_url %}
+    <a class="u-pull-right" href="{{ next_page_url }}">
+      older posts
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+  {% with post_content = post.body|markdown %}
+    {% include "post_base.html" %}
+  {% endwith %}
+{% endblock %}
