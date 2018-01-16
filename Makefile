@@ -1,5 +1,7 @@
+all: clean build	# TODO: add stage here one we can actually build something
+
 clean:
-	rm -r build
+	rm -rf build
 
 build:
 	posty build
