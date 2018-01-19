@@ -1,8 +1,14 @@
+author: Nick Pegg
 title: Nick Pegg
 # description: ''
+full_url: https://nickpegg.com/
 
 num_top_tags: 5
 num_posts_per_page: 5
+
+feeds:
+  rss: True
+  atom: True
 
 # Backward compatibility tunables
 compat:
