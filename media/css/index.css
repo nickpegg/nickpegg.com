@@ -1,6 +1,11 @@
 body {
   background: #FCFCFC;
   color: #35352F;
+  font-family: 'Quicksand', sans-serif;
+}
+
+p {
+  font-family: 'Roboto', sans-serif;
 }
 
 a {
@@ -9,10 +14,6 @@ a {
 
 a:hover {
   color: #FF4F00;
-}
-
-h1, h2, h3, h4, h5 {
-  font-family: 'Quicksand', sans-serif;
 }
 
 blockquote {
