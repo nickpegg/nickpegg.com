@@ -8,6 +8,10 @@ p {
   font-family: 'Roboto', sans-serif;
 }
 
+pre code {
+  font-family: 'Source Code Pro', monospace;
+}
+
 a {
   color: #FF4F00;
 }
