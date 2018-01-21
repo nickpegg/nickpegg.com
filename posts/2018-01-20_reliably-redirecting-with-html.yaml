@@ -1,0 +1,48 @@
+date: 2018-01-20
+tags:
+- programming
+- html
+- javascript
+title: Reliably Redirecting With HTML
+---
+When redesigning my website and re-writing my static site generator
+[Posty](https://github.com/nickpegg/posty), I wanted to refactor the URLs
+for my blog posts but not leave anyone hanging when they had an old URL
+bookmarked. Since my website could be hosted somewhere that I don't have
+control over the webserver config, I had to figure out how to do this with
+HTML.
+---
+My goals were:
+
+* Surprise users as little as possible
+* Don't tank my site's SEO
+* Reliably handle as many weirdo browsers as possible
+
+After some research, it seemed like a Javascript redirect was the safest since
+[at least GoogleBot passes PageRank to the destination page](https://www.branded3.com/blog/seo-javascript-redirects-evidence-pass-pagerank/).
+
+So here's what I came up with:
+{% raw %}
+```
+<html>
+    <head>
+        <!-- Try JavaScript first -->
+        <script type="text/javascript">
+            window.location = "{{ url }}";
+        </script>
+
+        <!-- If JavaScript is disabled or not supported, kick it old-school -->
+        <noscript>
+            <meta http-equiv="refresh" content="0; url={{ url }}">
+        </noscript>
+    </head>
+    <body>
+        <!-- If their browser is super-old, just give them a link to click -->
+        <p>
+            This page has moved. If your browser hasn't redirected you already,
+            <a href="{{ url }}">click here</a>.
+        </p>
+    </body>
+</html>
+```
+{% endraw %}
