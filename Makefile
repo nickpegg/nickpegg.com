@@ -1,4 +1,10 @@
+STAGING_SITE = test2.nickpegg.com
+
 all: clean build stage
+
+stage: clean stage_build stage_publish
+
+prod: clean build publish
 
 clean:
 	rm -rf build
@@ -6,12 +12,12 @@ clean:
 build:
 	posty build
 
-stage: clean stage_build stage_push
+publish:
+	rsync -auvP build/ golf:web
+
 
 stage_build:
 	posty build -c config.staging.yml
 
-stage_push:
-	gsutil -m rsync -c -d -r build/ gs://test2.nickpegg.com
-
-# TODO: add a `publish` task when ready to roll to prod
+stage_publish:
+	gsutil -m rsync -c -d -r build/ gs://$(STAGING_SITE)
