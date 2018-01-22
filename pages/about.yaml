@@ -5,6 +5,23 @@ slug: about
 ---
 ![jawn](/media/img/nick.jpg)
 
-By day I'm a Site Reliability Engineer on the [Dropbox Network](https://bgp.he.net/AS19679) team, where I help provide the tools to monitor and automate the network that syncs your files to all of your devices.
+By day I'm a Site Reliability Engineer on the
+[Dropbox Network](https://bgp.he.net/AS19679) team, where I help provide the
+tools to monitor and automate the network that syncs your files to all of your
+devices.
 
-Outside of work I'm usually found riding bikes (sometimes for long distances carrying camping gear), wrenching on bikes, drinking too much coffee, drinking not-too-much beer, brewing the latter two, or writing code to support my hobbies.
+Outside of work I'm usually found riding bikes (sometimes for long distances
+carrying camping gear), wrenching on bikes, drinking too much coffee, drinking
+not-too-much beer, brewing the former two, or writing code to support my
+hobbies.
+
+I'm a huge proponent of free open-source software and maintaining control of
+your data.
+
+I also enjoy coding goofy things. Here are some GitHub repos to give you an
+idea:
+
+* [A tcpdump-to-MIDI converter](https://github.com/nickpegg/tcpdump-tunes)
+* [A tool to create a bizarro Twitter version of someone](https://github.com/nickpegg/bizarro_twitter)
+* [butts in your chat](https://github.com/nickpegg/lita-butt)
+* [Numberwang-as-a-service](https://github.com/nickpegg/numberwang)
