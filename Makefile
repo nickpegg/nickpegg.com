@@ -13,7 +13,7 @@ build:
 	posty build
 
 publish:
-	rsync -auvP build/ golf:web
+	rsync -auvP build/ deploy.nickpegg.com:web
 
 
 stage_build:
