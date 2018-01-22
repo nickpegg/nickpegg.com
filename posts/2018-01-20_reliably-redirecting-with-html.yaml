@@ -15,7 +15,7 @@ HTML.
 My goals were:
 
 * Surprise users as little as possible
-* Don't tank my site's SEO
+* Don't tank my site's search engine ranking
 * Reliably handle as many weirdo browsers as possible
 
 After some research, it seemed like a Javascript redirect was the safest since
