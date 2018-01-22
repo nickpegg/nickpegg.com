@@ -8,6 +8,12 @@ article section {
   font-family: 'Roboto', sans-serif;
 }
 
+article section img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 pre code {
   font-family: 'Source Code Pro', monospace;
   font-size: 80%;
