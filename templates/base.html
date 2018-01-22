@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>{{ site.title }} - {% block page_title %}{% endblock %}</title>
+    <title>{{ site.config.title }} - {% block page_title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,300" rel="stylesheet" type="text/css" />
@@ -20,8 +20,8 @@
   <body>
     <div class="page-header">
       <div class="container">
-        <a href="{{ site.base_url }}">
-          <h1>{{ site.title }}</h1>
+        <a href="{{ site.config.base_url }}">
+          <h1>{{ site.config.title }}</h1>
         </a>
       </div>
     </div>
@@ -32,7 +32,7 @@
           <div class="row">
             <ul>
               <li>
-                <a href="{{ site.base_url }}">
+                <a href="{{ site.config.base_url }}">
                   Home
                 </a>
               </li>
@@ -91,7 +91,7 @@
           <div class="row">
             <h5 class="nav-header">Top Tags</h5>
             <ul>
-            {% for tag in site.tags[:5] %}
+            {% for tag in site.tags[:site.config.num_top_tags] %}
               <li>
                 <a href="/tag/{{ tag }}/">
                   <i class="fa fa-tag"></i>
