@@ -1,0 +1,7 @@
+date: 2018-01-25
+tags:
+  - bike
+  - touring
+title: Bike Touring Page
+---
+I've added a new page to chronicle my bike touring trips besides whatever blog posts I make about them. [Go check it out!]({{ "/bike-touring/" | absolute_url }})
