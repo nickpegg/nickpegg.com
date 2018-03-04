@@ -1,0 +1,26 @@
+date: 2018-03-04
+tags:
+- linux
+title: Anacron
+---
+Here's a Linux utility that I recently learned about: [Anacron](https://linux.die.net/man/8/anacron)
+
+Simliar to `cron`, it runs tasks on a periodic basis, but it will ensure the task runs when the computer is on.
+
+My use case is that I want my backup repository integrity check to run once a week on my laptop, but when a cron `@weekly` task is going fire (midnight on Sunday) my laptop's going to be turned off. Anacron to the rescue!
+
+So what I did is set up an anacron task to run my backup check script once a week, and then set up cron to run anacron every 10 minutes:
+```crontab
+*/10 * * * *  /usr/sbin/anacron -s -t $HOME/.anacron/tab -S $HOME/.anacron/spool
+```
+
+And here's what my anacrontab looks like:
+```anacron
+SHELL=/bin/bash
+HOME=/home/nick
+
+# period  delay  job-id  command
+# # (days)  (min)
+7 0 backup-check  $HOME/bin/backup.check
+```
+---
