@@ -2,6 +2,7 @@ date: 2014-08-22
 tags:
   - linux
   - networking
+  - home-router
 title: Building My Own Home Router, Part 2 - 802.11
 ---
 In my [last post](http://nickpegg.com/2014/8/building_my_own_home_router,_part_1.html) I talked about getting my home router up and forwarding packets from nothing and getting my computers connected via Ethernet. The next step is to get 802.11 (WiFi) working.

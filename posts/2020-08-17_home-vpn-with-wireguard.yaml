@@ -1,0 +1,233 @@
+date: 2020-08-17
+tags:
+- linux
+- networking
+- home-router
+title: Home VPN with Wireguard
+---
+If you have an interest in Linux networking, by now you've probably heard of
+[Wireguard](https://www.wireguard.com/). In case you haven't, it's a newer
+cross-platform VPN whose main attraction is that it's way _way_ easier to set
+up on Linux than other VPNs that have come before it. If you've ever had to set
+up an IPSec VPN using Racoon or Openswan or StrongSwan or any other weird
+animal-based tool, then you know how much of a royal pain in the ass it is.
+
+While I was on a tear improving my home network, I decided to finally bite the
+bullet and set Wireguard up on my router and laptop, allowing me to securely
+connect to my home network from anywhere. This post outlines what I did to make
+that happen, in case you want to replicate it in your own home network.
+
+Fair bit of warning though: I'm assuming that you already have basic knowledge
+of networking: subnetting, routing, that kind of stuff.
+
+---
+# My Home Network
+To give you an idea of what I'm working with, the VPN server here will be my
+[router running Ubuntu Linux]({{ "/2014/08/building-my-own-home-router-part-1/" | absolute_url }}),
+and the client will be my laptop running Arch. My router setup is fairly basic
+for a home-built Linux router: it has two network interfaces, one internal and
+one external, has IP forwarding turned on in the kernel, and a bunch of
+iptables rules to handle forwarding packets around and NAT.
+
+For the examples throughout this post, we'll call the VPN server `router` and
+the client `laptop`. We'll assume that my home network's subnet is 10.0.0.0/24,
+my router's internal network interface is called `intf-internal` and my
+external interface is called `intf-external`. Since we need a subnet for the
+VPN clients to use, we'll use 10.1.0.0/24 for that.
+
+I'll be giving you a crash-course in the basics of Wireguard here, but if you
+want a deeper understanding of it you should visit [Wireguard's website for a
+more in-depth overview](https://www.wireguard.com/#conceptual-overview).
+
+# Installation
+Wireguard comes baked into the Linux kernel these days, but you'll need to
+install the tools to be able to work with it.
+
+On Debian-based systems:
+```bash
+sudo apt install wireguard
+```
+
+On Arch Linux:
+```bash
+sudo pacman -S wireguard-tools
+```
+
+# Key Generation
+Wireguard uses public-key encryption for all communication, and you need to
+generate keypairs **for each peer** in the VPN.
+
+I like to be fancy and do all in mostly one line and have the public key
+printed:
+```bash
+wg genkey | sudo tee /etc/wireguard/priv.key | wg pubkey | sudo tee /etc/wireguard/pub.key
+sudo chown 600 /etc/wireguard/priv.key
+```
+
+
+# Server Configuration
+## WireGuard
+Okay! Now that we have our keys generated it's to configure Wireguard.
+
+Here's my config in `/etc/wireguard/wg-home.conf`:
+```
+[Interface]
+# This Address both tells us the server's VPN address (10.1.0.1) as well as the
+# subnet (10.1.0.0/24)
+Address = 10.1.0.1/24
+# This is the UDP port the VPN server will be listening on
+ListenPort = 51820
+# This is the contents of /etc/wireguard/priv.key on the server, which you
+# generated earlier. NOTE: This is the literal key, NOT the path to the key file
+PrivateKey = <server priv.key>
+
+[Peer]
+# This is the pub.key from our laptop. Like the priv key, this should be the
+# literal key, not the path to the key file.
+PublicKey = <client pub.key>
+# This is the IP address we've assigned to our client
+AllowedIPs = 10.1.0.11/32
+
+# You can keep adding more [Peer] blocks as you have more machines
+```
+
+This is a straight-forward config: under `[Interface]` we have an address with
+a subnet defined, a port to listen on, and a peer defined. Under `[Peer]` the
+`AllowedIPs` option in Wireguard configs is interesting because it essentially
+defines what routes the peer on the other side handles for us; anything
+destined for an IP in one of these subnets will get sent to that peer. In this
+case it only handles traffic for itself, so we configure a single IP address,
+so it's a single /32.
+
+Since we saved this file as `/etc/wireguard/wg-home.conf`, it will correspond
+to a virtual interface on the router called `wg-home`. We want this interface
+to come up automatically when the server boots up, and there are various ways
+to do that depending on what network management system you use
+(systemd-networkd, NetworkManager, etc.) but I prefer to just use the systemd
+service units that are available: `wg-quick@<interface name>.service`
+
+```bash
+sudo systemctl enable wg-quick@wg-home.service
+sudo systemctl start wg-quick@wg-home.service
+```
+
+If everything worked, you should be able to use the `wg show` command to see
+that the configuration is applied:
+```shell
+$ sudo wg show
+interface: wg-home
+  public key: <server pub.key>
+  private key: (hidden)
+  listening port: 51820
+
+peer: <client pub.key>
+  allowed ips: 10.1.0.11/32
+```
+
+## Iptables
+Since we have custom iptables rules to handle the routing and NATing, we also
+need some rules to allow
+```
+# Allow outside clients to connect to Wireguard
+-A INPUT -i intf-external -p udp --dport 51280 -j ACCEPT
+# Anything coming from the VPN can talk to the router directly
+-A INPUT -i wg-home -j ACCEPT
+
+# VPN clients are allowed to talk to the rest of the network, and vice versa
+-A FORWARD -i wg-home -o intf-internal -j ACCEPT
+-A FORWARD -i intf-internal -o wg-home -j ACCEPT
+```
+
+If you're running IPv6 on your network, don't forget to also add the same rules
+via `ip6tables`!
+
+# Client Configuration
+Okay we're in the home stretch! We just need to configure the client. Just like
+the server, I've saved this config to `/etc/wireguard/wg-home.conf` so that it
+will show up as the `wg-home` virtual interface.
+
+```
+[Interface]
+Address = 10.1.0.11/24
+PrivateKey = <client priv.key>
+DNS = 10.0.0.1, home.your.net
+
+[Peer]
+PublicKey = <server pub.key>
+AllowedIPs = 10.1.0.0/24, 10.0.0.0/24
+Endpoint = vpn.your.net:51820
+```
+This is quite a bit like the server's config, but with some interesting
+changes.  First, in `[Interface]` we define `DNS`. Any IPs listed here will be
+used as DNS servers, and any non-IPs will be used as search domains. Using your
+router for DNS with a search of your home network's domain means you can
+reference your home computers by hostname, like `ssh router`, once you're
+connected to the VPN.
+
+Under `[Peer]` you'll see an `Endpoint`, which is the external hostname for the
+router. You'll also see that `AllowedIPs` is way different,
+`10.1.0.0/24, 10.0.0.0/24`. This says that those two subnets are available on
+the other side of the VPN, and any traffic destined for them should be sent
+over the VPN. Be careful to not set this too wide, or otherwise you may disrupt
+local (to your laptop) traffic if the public network you connected to uses
+`10.x.x.x`.
+
+This sort of setup is typically called "split tunnel" in the VPN world, where
+only a subset of traffic is being sent through the VPN. If instead you wanted
+_all_ of your traffic sent over the VPN, you could just set
+`AllowedIPs = 0.0.0.0/0, ::/0`, which will send all IPv4 and IPv6 traffic over.
+
+I also like to use the systemd service unit to manage this connection, but I
+don't `enable` it so it doesn't automatically start when my laptop boots.
+Instead I just start it ad-hoc when I want to connect to home.
+```shell
+sudo systemctl start wg-quick@wg-home.service
+```
+
+Just like the server, you can use `wg show` to see the status:
+```shell
+$ sudo wg show
+interface: wg-home
+  public key: <client pub.key>
+  private key: (hidden)
+  listening port: 59184
+
+peer: <server pub.key>
+  endpoint: <router external IP>:51820
+  allowed ips: 10.1.0.0/24, 10.0.0.0/24
+  latest handshake: 4 seconds ago
+  transfer: 1.52 KiB received, 2.09 KiB sent
+```
+
+And if we ping our server's VPN address:
+```shell
+$ fping 10.1.0.1
+10.1.0.1 is alive
+```
+
+Hooray!
+
+# Things to note
+If your server has a tendency to change IPs (like home internet connections
+do), and your `Endpoint` in your client's config points to a dynamic DNS
+address, you'll need to either restart `wg-quick@wg-home.service` every time
+that happens, or use the `reresolve-dns.sh` script that comes with the
+Wireguard tools to handle this. The Arch Linux wiki has [a good writeup on how
+to set that up](https://wiki.archlinux.org/index.php/WireGuard#Endpoint_with_changing_IP).
+
+The systemd service units make use of the `wg-quick` program to do the setup of
+the VPN tunnels. You may think it's magical how it routes packets, but as a
+matter of fact it just sets up an interface and routes, which you can inpect
+just like any other interface or route in Linux:
+```shell
+$ ip addr show dev wg-home
+80: wg-home: <POINTOPOINT,NOARP,UP,LOWER_UP> mtu 1420 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/none
+    inet 10.1.0.11/24 scope global wg-home
+       valid_lft forever preferred_lft forever
+
+$ ip route | grep wg-home
+10.0.0.0/24 dev wg-home scope link
+10.1.0.0/24 dev wg-home proto kernel scope link src 10.1.0.11
+```
+
