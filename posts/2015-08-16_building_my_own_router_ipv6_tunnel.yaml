@@ -3,6 +3,7 @@ tags:
   - linux
   - networking
   - ipv6
+  - home-router
 title: Building My Own Home Router - IPv6 Tunnel
 ---
 Continuing on my adventure of running my own self-built router at home, I decided to get IPv6 running on my home network. As of writing this blog post, my ISP doesn't do native IPv6 yet so I decided to go with Hurricane Electric's [IPv6 Tunnel Broker](https://tunnelbroker.net) service, which provides you with an IPv6-in-IPv4 tunnel.
