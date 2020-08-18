@@ -1,0 +1,93 @@
+date: 2020-08-18
+tags:
+- linux
+- networking
+- home-router
+title: IPv6 Tunnel with Wireguard
+---
+In my [last post]({{"/2020/08/home-vpn-with-wireguard/" | absolute_url}}) I
+talked about setting up a VPN tunnel to my home network using Wireguard, but
+did you know that Wireguard also makes for a good IPv6-in-IPv4 tunnel?
+
+---
+This setup involves a VM from Linode as well as some IPv6 address blocks
+assigned from them. If you're interested is replicating this setup, you'll have
+to open a support ticket with them to request both a /116 block, and a /64
+block which gets routed to your VM.
+
+Here's a diagram of how all this will fit together (click the image for a
+larger view of it):
+[![IPv6 tunnel network diagram](/media/img/home-ipv6-tunnel-thumb.png)](/media/img/home-ipv6-tunnel.png)
+
+Here I'm using the /116 I got from Linode, `2600:3c01::xxxx:f000/116` for the
+VPN tunnel communication, and the /64 I got, `2600:3c01:e000:yyyy::/64` for my
+home network.
+
+I've already [previously talked over the basics of setting up
+Wireguard]({{"/2020/08/home-vpn-with-wireguard/" | absolute_url}}) so I'm just
+going to skip straight to the configs.
+
+`/etc/wireguard/wg-ipv6.conf` on the Linode VM:
+```
+[Interface]
+Address = 2600:3c01::xxxx:f000/116
+ListenPort = 51820
+PrivateKey = <Linode VM private key>
+
+[Peer]
+PublicKey = <router public key>
+# Here we tell Wireguard to route traffic for the router's address in the /116
+# as well as the whole /64 to this peer.
+AllowedIPs = 2600:3c01::xxxx:f001/128, 2600:3c01:e000:yyyy::/64
+
+```
+
+`/etc/wireguard/wg-ipv6.conf` on my router:
+```
+[Interface]
+Address = 2600:3c01::xxxx:f001/116
+PrivateKey = <router private key>
+
+# I'm blocking forwarded traffic by default on my router, so I need to allow
+# traffic from my home network out through the Wireguard interface. I don't
+# need a rule in the reverse direction since I already have a rule allowing all
+# related traffic back.
+#
+# %i will automatically get replaced by the Wireguard interface name.
+PostUp = ip6tables -A FORWARD -i br0 -o %i -j ACCEPT
+PostDown = ip6tables -D FORWARD -i br0 -o %i -j ACCEPT
+
+[Peer]
+PublicKey = <Linode vm public key>
+# Here we tell Wireguard to route the Linode VM's address from the /116 as well
+# as the default route to this peer
+AllowedIPs = 2600:3c01::xxxx:f000/128, ::/0
+Endpoint = linode_vm.yourdomain.com:51820
+```
+
+For IPv6 addresses on each of the clients, I'm using
+[radvd](http://www.litech.org/radvd/) on the router to advertise itself as the
+router and hand out [SLAAC
+addresses](https://en.wikipedia.org/wiki/IPv6#Stateless_address_autoconfiguration_(SLAAC)).
+Here's what `/etc/radvd.conf` looks like on the router:
+```
+# br0 is my inside network bridge interface
+interface br0
+{
+    AdvSendAdvert on;
+    # Send router advertisements every 10 seconds at most
+    MaxRtrAdvInterval 10;
+
+    # This is the /64 subnet that Linode allocated to me
+    prefix 2600:3c01:e000:yyyy::/64
+    {
+    };
+};
+```
+
+And then, like with the last time, I enabled and started the systemd service
+units on each machine:
+```shell
+sudo systemctl enable wg-quick@wg-ipv6.service
+sudo systemctl start wg-quick@wg-ipv6.service
+```
