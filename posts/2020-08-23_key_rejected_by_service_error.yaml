@@ -8,9 +8,14 @@ soul who has run into this sort of thing.
 I've been playing around with KVM virtual machines on my home server recently,
 and have started using the `virt-sparsify` and `virt-resize` CLI tools
 respectively to generate a compressed golden machine image and apply that image
-to a new VM. After doing this and booting the new machine, I got this failure
-after trying to load in a kernel module:
+to a new VM. For example:
+```
+sudo virt-sparsify --compress --convert qcow2 /dev/vg0/debian-base debian-base.qcow2
+sudo virt-resize --expand /dev/sda2 --no-sparse debian-base.qcow2 /dev/vg0/new-vm
+```
 
+After doing this and booting the new machine, I got this failure after trying
+to load in a kernel module:
 ```
 $ sudo modprobe bridge
 modprobe: ERROR: could not insert 'bridge': Key was rejected by service
