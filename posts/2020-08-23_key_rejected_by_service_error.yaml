@@ -1,0 +1,42 @@
+date: 2020-08-23
+title: '"Key was rejected by service" kernel module error on cloned VMs'
+---
+Here's a quick blurb about something I recently ran into and found a fix for, and
+I'm hoping that the search indexing gods find this and help some other poor
+soul who has run into this sort of thing.
+
+I've been playing around with KVM virtual machines on my home server recently,
+and have started using the `virt-sparsify` and `virt-resize` CLI tools
+respectively to generate a compressed golden machine image and apply that image
+to a new VM. For example:
+```
+sudo virt-sparsify --compress --convert qcow2 /dev/vg0/debian-base debian-base.qcow2
+sudo virt-resize --expand /dev/sda2 --no-sparse debian-base.qcow2 /dev/vg0/new-vm
+```
+
+After doing this and booting the new machine, I got this failure after trying
+to load in a kernel module:
+```
+$ sudo modprobe bridge
+modprobe: ERROR: could not insert 'bridge': Key was rejected by service
+```
+
+Uhhh, what? This seems to point to some secure boot signing-related thing, but
+I'm pretty sure nothing has gone awry with that since all I did was make a disk
+clone. After a bunch of experimenting, I discovered that cloning with
+straight `dd` would work fine, and would somehow taint the target disk so that
+future `virt-resize` runs would always result in a working target!
+
+This was really weird, so I dug through the [`virt-resize`
+manpage](https://libguestfs.org/virt-resize.1.html), and came across the
+`--no-sparse` flag which has this in its description:
+
+> The main time this can be a problem is if the target is a host partition (eg. virt-resize source.img /dev/sda4) because the usual partitioning tools tend to leave whatever data happened to be on the disk before.
+>
+> If you have to reuse a target which contains data already, you should use the --no-sparse option. Note this can be much slower.
+
+Well shit. My target VM that's receiving the image is using a LVM logical
+volume for its drive, which I'm sure has some leftover data on it.
+**`virt-resize --no-sparse` fixes this issue for me, as does zeroing out the LV
+before applying the image.** With the sparse copying, some old junk data must
+have been lurking in the new VM's partition, causing the issues.
