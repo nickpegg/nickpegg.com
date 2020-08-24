@@ -1,5 +1,5 @@
 date: 2020-08-23
-title: '"Key was rejected by service" when loading kernel modules on VMs'
+title: '"Key was rejected by service" kernel module error on cloned VMs'
 ---
 Here's a quick blurb about something I recently ran into and found a fix for, and
 I'm hoping that the search indexing gods find this and help some other poor
