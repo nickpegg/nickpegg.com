@@ -1,0 +1,77 @@
+date: 2021-01-08
+tags:
+- linux
+- kvm
+title: KVM USB Auto-Passthrough
+---
+I do all of my PC gaming on a Windows VM which I run on a Linux host running
+KVM. With a new gaming monitor on the way, I got the idea of using a
+DisplayPort/USB switcher to switch my keyboard, mouse, and monitor between my
+laptop and Windows VM (via KVM's USB passthrough). That way I can connect
+the monitor directly to the Windows VM and use its 144 Hz refresh rate instead
+of being stuck at what Linux is displaying along with the 30 or 60 fps provided
+by [Parsec](https://parsec.app/).
+
+Before I buy that USB switcher, I need to make sure that I can have my USB
+devices to auto-connect to the VM when they get connected to my Linux host.
+
+Through my cursory searching I couldn't find a way native to libvirt/qemu to do
+this, so udev to the rescue! Through udev rules, I'm able to detect when a
+device matching some parameters is connected, and then run a command. This
+command will get a bunch of environment variables set from udev. The
+interesting ones to us are:
+
+* `ACTION` - add, remove, etc.
+* `ID_VENDOR_ID` - the USB vendor ID
+* `ID_MODEL_ID` - the USB model ID.
+
+To test this idea out, I set up a simple rule that matches against my keyboard
+and saved this as `/etc/udev/rules.d/90-libvirt-usb.rules`:
+```
+ACTION=="bind", \
+	SUBSYSTEM=="usb", \
+	ENV{ID_VENDOR_ID}=="6b62", \
+	ENV{ID_MODEL_ID}=="6869", \
+	RUN+="/usr/local/bin/kvm-udev attach steam"
+ACTION=="remove", \
+	SUBSYSTEM=="usb", \
+	ENV{ID_VENDOR_ID}=="6b62", \
+	ENV{ID_MODEL_ID}=="6869", \
+	RUN+="/usr/local/bin/kvm-udev detach steam"
+```
+
+And of course, here's the script `/usr/local/bin/kvm-udev` which takes care of
+the auto-connecting. It takes two parameters, first either being "attach" or
+"detach" and the second being the name of the KVM domain (aka VM).
+```
+#!/bin/bash
+
+# Usage: ./kvm-udev.sh attach|detach <domain>
+
+set -e
+
+ACTION=$1
+DOMAIN=$2
+
+CONF_FILE=$(mktemp --suffix=.kvm-udev)
+cat << EOF >$CONF_FILE
+<hostdev mode='subsystem' type='usb'>
+	<source>
+		<vendor id='0x${ID_VENDOR_ID}' />
+		<product id='0x${ID_MODEL_ID}' />
+	</source>
+</hostdev>
+EOF
+
+virsh "${ACTION}-device" "$DOMAIN" "$conf_file"
+rm "$CONF_FILE"
+```
+
+This writes out a temporary file which contains some libvirt XML config for doing
+device passthrough, picking details from the environment variables that udev
+sets. It then calls `virsh` to attach/detach the device to the given domain
+using that temporary config file.
+
+And with that, every time I plug my keyboard into my KVM host, it automatically
+routes it to my Windows VM! Now that this works, I can add an additional rule
+for my mouse, so that switching these devices between computers works smoothly.
