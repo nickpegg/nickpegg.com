@@ -41,7 +41,7 @@ ACTION=="remove", \
 ```
 
 The VENDOR_ID and MODEL_ID can be found by running the `lsusb` command, which
-shows this as "ID <vendor id>:<model id>", for example "ID 6b62:6869".
+shows this as "ID vendor_id:model_id", for example "ID 6b62:6869".
 
 And of course, here's the script `/usr/local/bin/kvm-udev` which takes care of
 the auto-connecting. It takes two parameters, first either being "attach" or
