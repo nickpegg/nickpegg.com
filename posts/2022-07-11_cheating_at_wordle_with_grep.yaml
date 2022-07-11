@@ -38,4 +38,3 @@ faust
 ```
 
 You could eliminate words that have letters you've already eliminiated by chaining `grep -v <letter>` to the end, but I find that pretty cumbersome. There's only a handful of possible words at this point, so I think it's easier to just remove them in my head.
-
