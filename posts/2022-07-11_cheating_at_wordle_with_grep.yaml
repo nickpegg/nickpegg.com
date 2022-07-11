@@ -1,25 +1,38 @@
 date: 2022-07-11
 title: 'Cheating at Wordle with grep'
 ---
-I usually try to make a good effort at [Wordle](https://www.nytimes.com/games/wordle/index.html), but sometimes I get down to the last one or two chances and need some help. Instead of anything fancy-pants, I usually turn to a dictionary file and my friend, `grep`.
+I usually try to make a good effort at
+[Wordle](https://www.nytimes.com/games/wordle/index.html), but sometimes I get
+down to the last one or two chances and need some help. Instead of anything
+fancy-pants, I usually turn to a dictionary file and my friend, `grep`.
 
-So, first thing's first, you need a dictionary file, which is just a file with a bunch of words one-per-line. These are usually found in `/usr/share/dict`. I happen to have `cracklib-small` on my machine so we'll use that.
+So, first thing's first, you need a dictionary file, which is just a file with
+a bunch of words one-per-line. These are usually found in `/usr/share/dict`. I
+happen to have `cracklib-small` on my machine so we'll use that.
 
-First, you'll want to get all the five-letter words out of the file. I use the regex `^\w{5}$`, which is `^` for the start of the line, `\w` for an alphanumeric character, `{5}` saying that there are 5 of them, and `$` for the end of the line. The beginning and end of line markers are important, otherwise you'll get words that contain 5 or more letters.
+First, you'll want to get all the five-letter words out of the file. I use the
+regex `^\w{5}$`, which is `^` for the start of the line, `\w` for an
+alphanumeric character, `{5}` saying that there are 5 of them, and `$` for the
+end of the line. The beginning and end of line markers are important, otherwise
+you'll get words that contain 5 or more letters.
 
 ```
 grep -E '^\w{5}$' /usr/share/dict/cracklib-small
 ```
 
-At this point, I've already made some guesses and have a few letters in the right spot, and some letters which are correct but in the wrong spot. We'll bucket these into two `grep`s.
+At this point, I've already made some guesses and have a few letters in the
+right spot, and some letters which are correct but in the wrong spot. We'll
+bucket these into two `grep`s.
 
-For letters in the right spot, I stick those right into a regex. For example, let's say I know the word starts with 'f' and 'a':
+For letters in the right spot, I stick those right into a regex. For example,
+let's say I know the word starts with 'f' and 'a':
 
 ```
 grep -E 'fa\w\w\w'
 ```
 
-For the right letters in the wrong spot, I simply use the letter as the regex. If I have multiple letters, I can chain those together by piping grep like so:
+For the right letters in the wrong spot, I simply use the letter as the regex.
+If I have multiple letters, I can chain those together by piping grep like so:
 
 ```
 grep s | grep t
@@ -37,4 +50,7 @@ fates
 faust
 ```
 
-You could eliminate words that have letters you've already eliminiated by chaining `grep -v <letter>` to the end, but I find that pretty cumbersome. There's only a handful of possible words at this point, so I think it's easier to just remove them in my head.
+You could eliminate words that have letters you've already eliminiated by
+chaining `grep -v <letter>` to the end, but I find that pretty cumbersome.
+There's only a handful of possible words at this point, so I think it's easier
+to just remove them in my head.
