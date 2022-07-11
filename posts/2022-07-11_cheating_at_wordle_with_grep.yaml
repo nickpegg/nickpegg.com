@@ -1,7 +1,7 @@
 date: 2022-07-11
 title: 'Cheating at Wordle with grep'
 ---
-I usually try to make a good effort at [Wordle](https://www.nytimes.com/games/wordle/index.html), but sometimes I get down to the last chance and need some help. Instead of anything fancy-pants, I usually turn to a dictionary file and my friend, `grep`.
+I usually try to make a good effort at [Wordle](https://www.nytimes.com/games/wordle/index.html), but sometimes I get down to the last one or two chances and need some help. Instead of anything fancy-pants, I usually turn to a dictionary file and my friend, `grep`.
 
 So, first thing's first, you need a dictionary file, which is just a file with a bunch of words one-per-line. These are usually found in `/usr/share/dict`. I happen to have `cracklib-small` on my machine so we'll use that.
 
