@@ -1,5 +1,7 @@
 date: 2022-07-11
 title: 'Cheating at Wordle with grep'
+tags:
+    - linux
 ---
 I usually try to make a good effort at
 [Wordle](https://www.nytimes.com/games/wordle/index.html), but sometimes I get
