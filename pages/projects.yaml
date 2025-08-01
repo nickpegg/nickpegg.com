@@ -43,11 +43,6 @@ Links: [Project page](/cpu-usage-meter/), [Linux source](/media/projects/cpu_met
 
 LEDs on the front of my computer case displaying the CPU load.
 
-### Serial IR Receiver (2006)
-Links: [Project page](/ir-receiver/)
-
-A simple serial-based LIRC-compatible IR reciever.
-
 ### ServCheck (PHP)
 Links: [servCheck.tar.gz](/media/projects/servCheck.tar.gz)
 
@@ -55,19 +50,3 @@ A simple service checker written in PHP. Attempts to open a socket with the
 configured hosts and ports, and outputs an HTML file showing which services
 are up and down. I originally wrote this for the TerminalUnix site to show what's
 working and what isn't.
-
-### TerminalUnix (PHP)
-A PHP and MySQL driven site, functioning as a web front-end and community site for
-the TerminalUnix server. I started it because I was sick of all of these Content
-Management Systems having features that I didn't want. I sat down during Spring Break
-of 2006 and coded a PHP login system, not knowing about the wonders of some of the PHP
-features. Eventually I coded nice things in such as MySQL access (instead of a flat
-text file), a user adminstration system, and even a news sytem.
-
-Unfortunately I don't plan on releasing the source code since it's a big hard-coded mess.
-
-### N-Queens solver (C++)
-Links: [nqueens.tar.gz](/media/projects/nqueens.tar.gz)
-
-Another Data Structures homework assignment. This solves (brute-forces) the
-[N-Queens Problem](https://www.google.com/search?q=n-queens+problem) using recursion and backtracking.
