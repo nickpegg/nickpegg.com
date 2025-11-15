@@ -1,4 +1,4 @@
-STAGING_SITE = test2.nickpegg.com
+STAGING_SITE = test.nickpegg.com
 
 all: clean build stage
 
