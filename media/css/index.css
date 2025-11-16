@@ -52,6 +52,11 @@ blockquote {
   text-decoration: inherit;
 }
 
+.post-list-item {
+  display: grid;
+  grid-template-columns: 1fr 6fr;
+}
+
 /* nav
  ****************************************/
 .nav {

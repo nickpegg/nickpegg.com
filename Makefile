@@ -20,4 +20,4 @@ stage_build:
 	posty build -c config.staging.yml
 
 stage_publish:
-	gsutil -m rsync -c -d -r build/ gs://$(STAGING_SITE)
+	gsutil -m -h "Cache-Control:max-age=30, no-transform" rsync -c -d -r build/ gs://$(STAGING_SITE)
