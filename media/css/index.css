@@ -57,6 +57,10 @@ blockquote {
   grid-template-columns: 1fr 6fr;
 }
 
+.post-date {
+  min-width: 6em;
+}
+
 /* nav
  ****************************************/
 .nav {
